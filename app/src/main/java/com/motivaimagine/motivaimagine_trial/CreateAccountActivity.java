@@ -1,0 +1,460 @@
+package com.motivaimagine.motivaimagine_trial;
+
+import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
+
+import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.EditText;
+import android.widget.Scroller;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
+/**
+ * A login screen that offers login via email/password.
+ */
+public class CreateAccountActivity extends AppCompatActivity {
+    private int User;
+    public String TERMS="Terms and Conditions\n" +
+            "Introduction\n" +
+            "\n" +
+            "Welcome to www.motivaomplants.com (the “Site”). Establishment Labs Holdings Inc (referred to as “Establishment Labs”, “we”, “us” or “our”, as applicable) provides you with access to the Site subject to the terms and conditions contained in this Terms of Use Agreement (the “Agreement’). Please read this Agreement carefully. By accessing or using this Site, you agree without restriction to be bound by this Agreement. If you do not agree to follow and be bound by this Agreement, you may not access, use or download materials from this Site.\n" +
+            "\n" +
+            "\n" +
+            "Please note that if you are an existing customer or supplier of ESTABLISHMENT LABS, these terms are not intended to replace or modify those contained in your customer or vendor agreement. In case of an inconsistency, the terms and conditions of your written agreement will prevail over those contained herein. All ESTABLISHMENT LABS products and services may also be subject to separate terms and conditions which govern their use.\n" +
+            "\n" +
+            "ESTABLISHMENT LABS reserves the right to update or modify this Agreement at any time without prior notice. Your use of this Site following any such change constitutes your agreement to follow and be bound by this Agreement as revised. For this reason, we encourage you to review this Agreement each time you use this Site. This Agreement was last revised on June 20, 2017.\n" +
+            "\n" +
+            "The Availability of the Site and International Users\n" +
+            "The Site is administered by ESTABLISHMENT LABS Holdings Inc, and its contents (the “Content”) is designed to comply with local applicable laws and regulations. Access to the Site and the Content may not be legal by certain persons or in certain countries. If you access this Site from outside the United States, you do so at your own risk and are responsible for compliance with the laws of your jurisdiction. Materials published on this Site may refer to products or services that are not available in your country. Consult your local ESTABLISHMENT LABS office for more information. Furthermore, ESTABLISHMENT LABS makes no representation that the materials on the Site are appropriate or available for use at other locations outside of the United States and access to them from countries where their contents are illegal is prohibited. You should not construe anything on the Site as a promotion or solicitation for any product or for the use of any product that is not authorized by the laws and regulations of the country in which you are located.\n" +
+            "\n" +
+            "This Site is Not a Source of Medical Advice\n" +
+            "The Content of this Site is presented in summary form, is general in nature, and is provided for informational purposes only; it is not intended nor recommended as a substitute for professional medical advice. You should not use the Content of this Site for diagnosing a health or fitness problem, disease or recommendation. Always seek the advice of your physician or other qualified health provider regarding any medical condition or treatment. Nothing contained on this Site is intended to be for medical advise. Never disregard medical advice or delay in seeking it because of something you have read on this Site.\n" +
+            "\n" +
+            "Copyright Notice and Limitation on Use\n" +
+            "No use should be made of materials on this Site, except as expressly authorized by this Agreement. All Site Content, including the selection, arrangement and design of the Content is owned either by ESTABLISHMENT LABS or its licensors and is protected by copyright and other intellectual property laws including the sui generis rights relating to the protection of databases. You may not modify, copy, reproduce, republish, upload, post, transmit or distribute in any way any Content, in whole or in part, including any code and software. You may download Content from the Site for your own personal, non-commercial use only, provided the Content is not modified in any way you keep intact all copyright and other proprietary notices and you include the phrase, “Used with permission of Establishment Labs” when you display or otherwise use the Content.\n" +
+            "\n" +
+            "Procedures for Claimed Copyright Infringement\n" +
+            "We respect the intellectual property rights of others and we ask that you do the same. If you believe that your work has been copied in a way that constitutes copyright infringement, please provide our Legal and Compliance Team, Email: legalaffairs@establishmentlabs.com with the following information:\n" +
+            "•an electronic or physical signature of the person authorized to act on behalf or the owner of the copyright interest;\n" +
+            "•a description of the copyrighted work that you claim has been infringed;\n" +
+            "•a description of where the material that you claim is infringing is located on the Site;\n" +
+            "•your address, telephone number and email address;\n" +
+            "•a statement by you that you have a good faith belief that the disputed use is not authorized by the copyright owner, its agent, or the law;\n" +
+            "•a statement by you, made under penalty of perjury, that the above information in your notice is accurate and that you are the copyright owner or duly authorized to act on the copyright owner’s behalf.\n" +
+            "\n" +
+            "Trademark Notice\n" +
+            "All of the trademarks, service marks and logos displayed on this Site (the “Trademark(s)”) are registered and unregistered trademarks of ESTABLISHMENT LABS, its affiliates, or third parties. Nothing contained in this Site should be construed as granting, by implication, estoppel, or otherwise, any license or right in and to the Trademarks without the express written permission of ESTABLISHMENT LABS or the applicable third party. Except as expressly provided in this Agreement, any use of the Trademarks found on the Site is strictly prohibited. Please note that the names of the companies and products mentioned on this site may be trademarks of their respective owners. A complete list of ESTABLISHMENT LABS’s trademarks for each operating segment is provided below.\n" +
+            "\n" +
+            "ESTABLISHMENT LABS Brands\n" +
+            "\n" +
+            "Public and Unsolicited Information\n" +
+            "This Site may provide opportunities to provide ESTABLISHMENT LABS feedback regarding this Site and our products and other unsolicited submissions (collectively, “Unsolicited Information”). You may only provide Unsolicited Information which meets the requirements of these Terms and Conditions.\n" +
+            "ESTABLISHMENT LABS and its employees do not accept or consider other unsolicited ideas, including ideas for new advertising campaigns, new promotions, new products or technologies, processes, materials, marketing plans or new product names. Please do not send any original creative artwork, samples, demos, or other works. The sole purpose of this policy is to avoid potential misunderstandings or disputes when ESTABLISHMENT LABS’s products or marketing strategies might seem similar to ideas submitted to ESTABLISHMENT LABS. So, except under the circumstances described above relating to patented ideas or those for which you have filed a patent application, please do not send your unsolicited ideas to ESTABLISHMENT LABS or anyone at ESTABLISHMENT LABS.\n" +
+            "If, despite our request that you not send us your ideas and materials, you still send them, and in the event you post Public Information on our Site, all such Public Information and all such Unsolicited Information will be considered NON-CONFIDENTIAL and NON-PROPRIETARY and ESTABLISHMENT LABS and its affiliates are free to use such information for any purpose and in any manner whatsoever.\n" +
+            "This Site may present opportunities to post information to public areas of the Site, such as bulletin boards (collectively, “Public Areas”), or to send along comments and feedback (any such information provided, “Public Information”). Although ESTABLISHMENT LABS may, from time to time, monitor or review the information posted to the Public Areas of the Site, ESTABLISHMENT LABS is under no obligation to do so, and assumes no responsibility or liability arising from the Content of such Public Areas or the Site in general or for any error, defamation, libel, slander, omission, falsehood, obscenity, pornography, profanity, danger, or inaccuracy contained in the Site.\n" +
+            "You are prohibited from posting or transmitting any unlawful, threatening, libelous, defamatory, obscene, inflammatory, pornographic, or profane material or any material that could constitute or encourage conduct that would be considered a criminal offense, give rise to civil liability, or otherwise violate the law. ESTABLISHMENT LABS will fully cooperate with any law enforcement authorities or court order requesting or directing ESTABLISHMENT LABS to disclose the identity of anyone posting any such material.\n" +
+            "Children under the age of eighteen should not submit any Public Information or Unsolicited Information containing personally identifiable data.\n" +
+            "\n" +
+            "Links to Other Websites\n" +
+            "This Agreement applies only to this Site. This Site may frame or contain references or links to other ESTABLISHMENT LABS Web sites (the “Other ESTABLISHMENT LABS Sites”).\n" +
+            "Please note that other ESTABLISHMENT LABS Sites are governed by their specific Terms and Conditions and Privacy Policies. We recommend that you carefully read those documents upon your entry to those other ESTABLISHMENT LABS Sites.\n" +
+            "\n" +
+            "No Framing Allowed\n" +
+            "Elements of this Site are protected by copyright, trade dress, trademark, unfair competition, and other laws and may not be copied or imitated in whole or in part by any means, including but not limited to, the use of framing, deep linking or mirrors. None of the Content for our Site may be retransmitted without the express written consent of ESTABLISHMENT LABS. If you are interested in linking to our Site, Contact Us for more information.\n" +
+            "\n" +
+            "Dealings with Advertisers\n" +
+            "Your correspondence or business dealings with, or participation in promotions of, advertisers found on or through the Site, including payment and delivery of related goods or services, and any other terms, conditions, warranties or representations associated with such dealings are solely between you and such advertiser. You agree that we are not responsible nor shall we be liable for loss or damage of any sort incurred as a result of any such dealings or as the result of the presence of such advertiser on the Site.\n" +
+            "\n" +
+            "Account Registration\n" +
+            "Some of the functions of this Site may require creation of an account with us. As part of the registration process, visitors will select a User Name and Password, along with registration information, which must be accurate and updated. You may not select or use a User Name of another person with the intent to impersonate that person or use a User Name in which another person has rights without such person’s authorization. Failure to comply with the above shall constitute a breach of this Agreement, which may result in immediate termination of your account. You agree to take reasonable measures to protect the security of your password.\n" +
+            "You are responsible for all usage or activity on your account, including use of the account by any third party authorized by you to use your User Name and Password. You shall notify ESTABLISHMENT LABS of any known or suspected unauthorized use(s) of your account, or any known or suspected breach of security, including loss, theft, or unauthorized disclosure of your password or any other relevant registration details provided.\n" +
+            "\n" +
+            "Site Privacy Statement\n" +
+            "Our Privacy Statement is available on this Site and by accessing the Site, you are agreeing to be legally bound by the Privacy Policy. The Privacy Policy in its entirety is hereby incorporated into this Agreement by reference. To read our Privacy Policy please click here.\n" +
+            "\n" +
+            "Disclaimer of Warranties\n" +
+            "THIS SITE CONTAINS INFORMATION CONCERNING ESTABLISHMENT LABS THAT MAY BE USEFUL TO OUR CUSTOMERS, EMPLOYEES, AND SHAREHOLDERS AS WELL AS TO THE GENERAL PUBLIC. HOWEVER, ESTABLISHMENT LABS MAKES NO REPRESENTATIONS OR WARRANTIES AS TO THE ACCURACY OF ANY INFORMATION CONTAINED HEREIN AND EXPRESSLY DISCLAIMS ANY OBLIGATION TO UPDATE SAID INFORMATION.\n" +
+            "THE SITE AND THE CONTENT ARE PROVIDED ON AN “AS IS,” “AS AVAILABLE” BASIS, WITHOUT WARRANTIES OF ANY KIND. THERE MAY BE DELAYS, OMISSIONS OR INACCURACIES IN THE CONTENT AND THE SITE. ESTABLISHMENT LABS AND ITS AFFILIATES DO NOT WARRANT THE ACCURACY, COMPLETENESS, TIMELINESS, NON-INFRINGEMENT, TITLE, MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE OF THE CONTENT OR THE SITE ITSELF, AND WE HEREBY DISCLAIM ANY SUCH EXPRESS OR IMPLIED WARRANTIES. ESTABLISHMENT LABS DOES NOT REPRESENT OR WARRANT THAT THE CONTENT OF THIS SITE IS FREE OF VIRUSES, WORMS OR OTHER CODE THAT MAY MANIFEST CONTAMINATING OR DESTRUCTIVE PROPERTIES. BECAUSE SOME JURISDICTIONS DO NOT PERMIT THE EXCLUSION OF CERTAIN WARRANTIES, THESE EXCLUSIONS MAY NOT APPLY TO YOU.\n" +
+            "\n" +
+            "Limitation of Liability\n" +
+            "YOUR USE OF THIS SITE IS AT YOUR SOLE RISK. UNDER NO CIRCUMSTANCES, SHALL ESTABLISHMENT LABS, ITS AFFILIATES OR ANY OF THEIR RESPECTIVE DIRECTORS, OFFICERS, EMPLOYEES, OR AGENTS, BE LIABLE FOR ANY DIRECT OR INDIRECT LOSSES OR DAMAGES ARISING OUT OF OR IN CONNECTION WITH YOUR USE OF OR INABILITY TO USE THIS SITE OR YOUR RELIANCE ON ANY CONTENT. THIS LIMITATION OF LIABILITY APPLIES TO ALL LOSSES AND DAMAGES OF ANY KIND WHATSOEVER, WHETHER DIRECT OR INDIRECT, GENERAL, SPECIAL, INCIDENTAL, CONSEQUENTIAL, EXEMPLARY OR OTHERWISE, INCLUDING WITHOUT LIMITATION, LOSS OF DATA, REVENUE OR PROFITS. THIS LIMITATION OF LIABILITY APPLIES WHETHER THE ALLEGED LIABILITY IS BASED ON CONTRACT, NEGLIGENCE, TORT, STRICT LIABILITY OR ANY OTHER BASIS AND EVEN IF AN AUTHORIZED REPRESENTATIVE OF ESTABLISHMENT LABS OR ITS AFFILIATES HAS BEEN ADVISED OF OR SHOULD HAVE KNOWN OF THE POSSIBILITY OF SUCH DAMAGES.\n" +
+            "SOME COUNTRIES DO NOT ALLOW THE EXCLUSION OF DAMAGES OR LIMITATION OF LIABILITY SET FORTH ABOVE, SO THIS LIMITATION OF LIABILITY MAY NOT APPLY TO YOU. IF ANY PART OF THIS LIMITATION OF LIABILITY IS FOUND TO BE INVALID OR UNENFORCEABLE FOR ANY REASON, THEN THE AGGREGATE LIABILITY OF ESTABLISHMENT LABS AND/OR ITS AFFILIATES UNDER SUCH CIRCUMSTANCES SHALL NOT EXCEED, ONE HUNDRED ($100.00) DOLLARS IN THE AGGREGATE. IF ANY REMEDY HEREUNDER IS DETERMINED TO HAVE FAILED OF ITS ESSENTIAL PURPOSE, ALL LIMITATIONS OF LIABILITY, DISCLAIMERS AND EXCLUSIONS OF WARRANTIES AND DAMAGES SET FORTH IN THIS AGREEMENT SHALL REMAIN IN EFFECT.\n" +
+            "\n" +
+            "Forward Looking Statements\n" +
+            "This site may from time to time contain certain forward-looking statements regarding ESTABLISHMENT LABS’s performance, including future revenues, products and income, or events or developments that ESTABLISHMENT LABS expects to occur or anticipates occurring in the future. All such statements are based upon current expectations of ESTABLISHMENT LABS and involve a number of business risks and uncertainties. Actual results could vary materially from anticipated results described, implied or projected in any forward-looking statement. Factors that could cause actual results to vary materially from any forward-looking statement include, but are not limited to: competitive factors; pricing and market share pressures; uncertainties of litigation; ESTABLISHMENT LABS’s ability to achieve sales and earnings forecasts, which are based on sales volume and product mix assumptions, to achieve its cost savings objectives, and to achieve anticipated synergies and other cost savings in connection with acquisitions; changes in regional, national or foreign economic conditions; increases in energy costs: fluctuations in costs and availability or raw materials and in ESTABLISHMENT LABS’s ability to maintain favorable supplier arrangements and relationships; changes in interest or foreign currency exchange rates; delays in product introductions; and changes in health care or other governmental regulation, as well as other factors discussed in this Site in ESTABLISHMENT LABS’s filings with the Securities and Exchange Commission. We do not intend to update any forward-looking statements.\n" +
+            "\n" +
+            "Indemnification\n" +
+            "In the event that any legal action is taken resulting from (i) your use of the Content or Site, including your breach of the terms of this Agreement, or (ii) any Unsolicited Information provided by you, you agree to defend, indemnify, hold harmless and pay any reasonable legal and accounting fees without limitation incurred by ESTABLISHMENT LABS, its affiliates, its and their directors, officers, employees, agents, investors or licensors. ESTABLISHMENT LABS shall provide notice to you promptly of any such claim, suit, or proceeding. ESTABLISHMENT LABS shall have the right, at its option and expense, to participate in the defense and/or settlement of any claim or action, or to assume the exclusive defense and control of any matter otherwise subject to indemnification by you without relieving your indemnification obligations. In no event shall you settle any suit or claim imposing any liability or other obligations on ESTABLISHMENT LABS without its prior written consent.\n" +
+            "\n" +
+            "General\n" +
+            "You are responsible for obtaining and maintaining all telephone, computer hardware and other equipment needed for access to and use of the Site and all charges related thereto. ESTABLISHMENT LABS reserves the right to alter or delete material from this Site at any time. This Site is controlled and operated by ESTABLISHMENT LABS Holdings Inc from its offices within Costa Rica. Any claim relating to, and the use of, this Site are governed by the laws of Costa Rica. By using this Site, you consent to personal jurisdiction in Costa Rica, for any action arising out of or relating to this Site or your use of this Site. Such courts shall have exclusive jurisdiction over all such actions. The United Nations Convention on Contacts for the International Sale of Goods does not apply to this Agreement.\n" +
+            "This Agreement constitutes the entire agreement between you and ESTABLISHMENT LABS with respect to your access to and/or use of this Site. Any claims arising in connection with your use of the Site or any Content must be brought within one (1) year of the date of the event giving rise to such action occurred. All provisions of this Agreement pertaining to indemnification, disclaimer or warranties, limitation of liability and proprietary rights shall survive the termination of this Agreement for any reason. If any provision of this Agreement is invalid or unenforceable, the remaining provisions will continue in full force and effect, and the invalid or unenforceable provision will be deemed superseded by a valid enforceable provision that closely matches the intent of the original provision. The failure by us to exercise or enforce any right or provision under this Agreement shall not constitute a waiver of such right or provision. All rights not expressly granted herein are hereby reserved.";
+
+
+    public String CADENA_PAISES="[ { \"id\": 1, \"name\": \"Vatican City\" }, { \"id\": 2, \"name\": \"Switzerland\" }, " +
+        "{ \"id\": 3, \"name\": \"Andorra\" }, { \"id\": 4, \"name\": \"Estonia\" }, { \"id\": 5, \"name\": \"Iceland\" }, " +
+        "{ \"id\": 6, \"name\": \"Armenia\" }, { \"id\": 7, \"name\": \"Albania\" }, { \"id\": 8, \"name\": \"Czech Republic\" }," +
+        " { \"id\": 9, \"name\": \"Georgia\" }, { \"id\": 10, \"name\": \"Austria\" }, { \"id\": 11, \"name\": \"Ireland\" }, { \"id\": 12, " +
+        "\"name\": \"Gibraltar\" }, { \"id\": 13, \"name\": \"Greece\" }, { \"id\": 14, \"name\": \"Netherlands\" }, { \"id\": 15, \"name\": \"Portugal\" }" +
+        ", { \"id\": 16, \"name\": \"Norway\" }, { \"id\": 17, \"name\": \"Latvia\" }, { \"id\": 18, \"name\": \"Lithuania\" }, { \"id\": 19, \"name\": \"Luxembourg\" }," +
+        " { \"id\": 20, \"name\": \"Spain\" }, { \"id\": 21, \"name\": \"Italy\" }, { \"id\": 22, \"name\": \"Romania\" }, { \"id\": 23, \"name\": \"Poland\" }," +
+        " { \"id\": 24, \"name\": \"Belgium\" }, { \"id\": 25, \"name\": \"France\" }, { \"id\": 26, \"name\": \"Bulgaria\" }, { \"id\": 27, \"name\": \"Denmark\" }," +
+        " { \"id\": 28, \"name\": \"Croatia\" }, { \"id\": 29, \"name\": \"Germany\" }, { \"id\": 30, \"name\": \"Hungary\" }, { \"id\": 31, \"name\": \"Bosnia/herzegovina\" }," +
+        " { \"id\": 32, \"name\": \"Finland\" }, { \"id\": 33, \"name\": \"Belarus\" }, { \"id\": 34, \"name\": \"Faeroe Islands\" }, { \"id\": 35, \"name\": \"Monaco\" }, " +
+        "{ \"id\": 36, \"name\": \"Cyprus\" }, { \"id\": 37, \"name\": \"Macedonia\" }, { \"id\": 38, \"name\": \"Slovakia\" }, { \"id\": 39, \"name\": \"Malta\" }, " +
+        "{ \"id\": 40, \"name\": \"Slovenia\" }, { \"id\": 41, \"name\": \"San Marino\" }, { \"id\": 42, \"name\": \"Sweden\" }, { \"id\": 43, \"name\": \"United Kingdom\" }," +
+        " { \"id\": 44, \"name\": \"Cook Islands\" }, { \"id\": 45, \"name\": \"Palau\" }, { \"id\": 46, \"name\": \"Tuvalu\" }, { \"id\": 47, \"name\": \"Nauru\" }, " +
+        "{ \"id\": 48, \"name\": \"Kiribati\" }, { \"id\": 49, \"name\": \"Marshall Islands\" }, { \"id\": 50, \"name\": \"Niue\" }, { \"id\": 51, \"name\": \"Tonga\" }," +
+        " { \"id\": 52, \"name\": \"New Zealand\" }, { \"id\": 53, \"name\": \"Australia\" }, { \"id\": 54, \"name\": \"Vanuatu\" }, { \"id\": 55, \"name\": \"Solomon Islands\" }" +
+        ", { \"id\": 56, \"name\": \"Samoa\" }, { \"id\": 57, \"name\": \"Fiji\" }, { \"id\": 58, \"name\": \"Micronesia\" }, { \"id\": 59, \"name\": \"Guinea-bissau\" }, " +
+        "{ \"id\": 60, \"name\": \"Zambia\" }, { \"id\": 61, \"name\": \"Ivory Coast\" }, { \"id\": 62, \"name\": \"Western Sahara\" }, { \"id\": 63, \"name\": \"Equatorial Guinea\" }, " +
+        "{ \"id\": 64, \"name\": \"Egypt\" }, { \"id\": 65, \"name\": \"Congo\" }, { \"id\": 66, \"name\": \"Central African Republic\" }, { \"id\": 67, \"name\": \"Angola\" }," +
+        " { \"id\": 68, \"name\": \"Gabon\" }, { \"id\": 69, \"name\": \"Ethiopia\" }, { \"id\": 70, \"name\": \"Guinea\" }, { \"id\": 71, \"name\": \"Gambia\" }, " +
+        "{ \"id\": 72, \"name\": \"Zimbabwe\" }, { \"id\": 73, \"name\": \"Cape Verde\" }, { \"id\": 74, \"name\": \"Ghana\" }, { \"id\": 75, \"name\": \"Rwanda\" }, " +
+        "{ \"id\": 76, \"name\": \"Tanzania\" }, { \"id\": 77, \"name\": \"Cameroon\" }, { \"id\": 78, \"name\": \"Namibia\" }, { \"id\": 79, \"name\": \"Niger\" }, " +
+        "{ \"id\": 80, \"name\": \"Nigeria\" }, { \"id\": 81, \"name\": \"Tunisia\" }, { \"id\": 82, \"name\": \"Liberia\" }, { \"id\": 83, \"name\": \"Lesotho\" }, " +
+        "{ \"id\": 84, \"name\": \"Togo\" }, { \"id\": 85, \"name\": \"Chad\" }, { \"id\": 86, \"name\": \"Eritrea\" }, { \"id\": 87, \"name\": \"Libya\" }, " +
+        "{ \"id\": 88, \"name\": \"Burkina Faso\" }, { \"id\": 89, \"name\": \"Djibouti\" }, { \"id\": 90, \"name\": \"Sierra Leone\" }, { \"id\": 91, \"name\": \"Burundi\" }, " +
+        "{ \"id\": 92, \"name\": \"Benin\" }, { \"id\": 93, \"name\": \"South Africa\" }, { \"id\": 94, \"name\": \"Botswana\" }, { \"id\": 95, \"name\": \"Algeria\" }, " +
+        "{ \"id\": 96, \"name\": \"Swaziland\" }, { \"id\": 97, \"name\": \"Madagascar\" }, { \"id\": 98, \"name\": \"Morocco\" }, { \"id\": 99, \"name\": \"Kenya\" }, " +
+        "{ \"id\": 100, \"name\": \"Mali\" }, { \"id\": 101, \"name\": \"Comoros\" }, { \"id\": 102, \"name\": \"Sao Tome And Principe\" }, { \"id\": 103, \"name\": \"Mauritius\" }," +
+        " { \"id\": 104, \"name\": \"Malawi\" }, { \"id\": 105, \"name\": \"Somalia\" }, { \"id\": 106, \"name\": \"Senegal\" }, { \"id\": 107, \"name\": \"Mauritania\" }, " +
+        "{ \"id\": 108, \"name\": \"Seychelles\" }, { \"id\": 109, \"name\": \"Uganda\" }, { \"id\": 110, \"name\": \"Sudan\" }, { \"id\": 111, \"name\": \"Mozambique\" }," +
+        " { \"id\": 112, \"name\": \"Mongolia\" }, { \"id\": 113, \"name\": \"China\" }, { \"id\": 114, \"name\": \"Afghanistan\" }, { \"id\": 115, \"name\": \"Serbia\" }," +
+        " { \"id\": 116, \"name\": \"Vietnam\" }, { \"id\": 117, \"name\": \"Canary Islands\" }, { \"id\": 118, \"name\": \"India\" }, { \"id\": 119, \"name\": \"Azerbaijan\" }, " +
+        "{ \"id\": 120, \"name\": \"Indonesia\" }, { \"id\": 121, \"name\": \"Russia\" }, { \"id\": 122, \"name\": \"Laos\" }, { \"id\": 123, \"name\": \"Taiwan\" }, " +
+        "{ \"id\": 124, \"name\": \"Turkey\" }, { \"id\": 125, \"name\": \"Sri Lanka\" }, { \"id\": 126, \"name\": \"Turkmenistan\" }, { \"id\": 127, \"name\": \"Tajikistan\" }," +
+        " { \"id\": 128, \"name\": \"Papua New Guinea\" }, { \"id\": 129, \"name\": \"Thailand\" }, { \"id\": 130, \"name\": \"Nepal\" }, { \"id\": 131, \"name\": \"Pakistan\" }, " +
+        "{ \"id\": 132, \"name\": \"Philippines\" }, { \"id\": 133, \"name\": \"Bangladesh\" }, { \"id\": 134, \"name\": \"Ukraine\" }, { \"id\": 135, \"name\": \"Brunei\" }, " +
+        "{ \"id\": 136, \"name\": \"Japan\" }, { \"id\": 137, \"name\": \"Bhutan\" }, { \"id\": 138, \"name\": \"Hong Kong\" }, { \"id\": 139, \"name\": \"Kyrgyzstan\" }, " +
+        "{ \"id\": 140, \"name\": \"Uzbekistan\" }, { \"id\": 141, \"name\": \"Burma (myanmar)\" }, { \"id\": 142, \"name\": \"Singapore\" }, { \"id\": 143, \"name\": \"Macau\" }," +
+        " { \"id\": 144, \"name\": \"Cambodia\" }, { \"id\": 145, \"name\": \"Republic of Korea \" }, { \"id\": 146, \"name\": \"Maldives\" }, { \"id\": 147, \"name\": \"Kazakhstan\" }, " +
+        "{ \"id\": 148, \"name\": \"Malaysia\" }, { \"id\": 149, \"name\": \"Guatemala\" }, { \"id\": 150, \"name\": \"Antigua And Barbuda\" }, { \"id\": 151, \"name\": \"British Virgin Islands (uk)\" }," +
+        " { \"id\": 152, \"name\": \"Anguilla (uk)\" }, { \"id\": 153, \"name\": \"Virgin Island\" }, { \"id\": 154, \"name\": \"Canada\" }, { \"id\": 155, \"name\": \"Grenada\" }, { \"id\": 156, \"name\": \"Aruba (netherlands)\" }," +
+        " { \"id\": 157, \"name\": \"Costa Rica\" }, { \"id\": 158, \"name\": \"Cuba\" }, { \"id\": 159, \"name\": \"Puerto Rico (us)\" }, { \"id\": 160, \"name\": \"Nicaragua\" }, { \"id\": 161, \"name\": \"Trinidad And Tobago\" }, " +
+        "{ \"id\": 162, \"name\": \"Guadeloupe (france)\" }, { \"id\": 163, \"name\": \"Panama\" }, { \"id\": 164, \"name\": \"Dominican Republic\" }, { \"id\": 165, \"name\": \"Dominica\" }, { \"id\": 166, \"name\": \"Barbados\" }," +
+        " { \"id\": 167, \"name\": \"Haiti\" }, { \"id\": 168, \"name\": \"Jamaica\" }, { \"id\": 169, \"name\": \"Honduras\" }, { \"id\": 170, \"name\": \"Bahamas, The\" }, { \"id\": 171, \"name\": \"Belize\" }, { \"id\": 172, \"name\": \"Saint Kitts And Nevis\" }," +
+        " { \"id\": 173, \"name\": \"El Salvador\" }, { \"id\": 174, \"name\": \"United States\" }, { \"id\": 175, \"name\": \"Martinique (france)\" }, { \"id\": 176, \"name\": \"Monsterrat (uk)\" }, { \"id\": 177, \"name\": \"Cayman Islands (uk)\" }, " +
+        "{ \"id\": 178, \"name\": \"Mexico\" }, { \"id\": 179, \"name\": \"South Georgia and the South Sandwich Islands\" }, { \"id\": 180, \"name\": \"Paraguay\" }, { \"id\": 181, \"name\": \"Colombia\" }, { \"id\": 182, \"name\": \"Venezuela\" }, " +
+        "{ \"id\": 183, \"name\": \"Chile\" }, { \"id\": 184, \"name\": \"Suriname\" }, { \"id\": 185, \"name\": \"Bolivia\" }, { \"id\": 186, \"name\": \"Ecuador\" }, { \"id\": 187, \"name\": \"French Guiana\" }, { \"id\": 188, \"name\": \"Argentina\" }, " +
+        "{ \"id\": 189, \"name\": \"Guyana\" }, { \"id\": 190, \"name\": \"Brazil\" }, { \"id\": 191, \"name\": \"Peru\" }, { \"id\": 192, \"name\": \"Uruguay\" }, { \"id\": 193, \"name\": \"Falkland Islands\" }, { \"id\": 194, \"name\": \"Oman\" }," +
+        " { \"id\": 195, \"name\": \"Lebanon\" }, { \"id\": 196, \"name\": \"Iraq\" }, { \"id\": 197, \"name\": \"Yemen\" }, { \"id\": 198, \"name\": \"Iran\" }, { \"id\": 199, \"name\": \"Bahrain\" }, { \"id\": 200, \"name\": \"Syria\" }," +
+        " { \"id\": 201, \"name\": \"Qatar\" }, { \"id\": 202, \"name\": \"Jordan\" }, { \"id\": 203, \"name\": \"Kuwait\" }, { \"id\": 204, \"name\": \"Israel\" }, { \"id\": 205, \"name\": \"United Arab Emirates\" }, { \"id\": 206, \"name\": \"Saudi Arabia\" }, " +
+        "{ \"id\": 207, \"name\": \"Liechtenstein\" }, { \"id\": 208, \"name\": \"Democratic People's Republic of Korea\" }, { \"id\": 209, \"name\": \"Montenegro\" } ]";
+
+
+    private static final String TAG = "SignupActivity";
+    private static final String OPCION = "Opc";
+    @BindView(R.id.chk_terms) CheckBox _terms;
+    @BindView(R.id.sp_country) Spinner _country;
+    @BindView(R.id.input_name) EditText _nameText;
+    @BindView(R.id.input_lname) EditText _lnameText;
+    @BindView(R.id.input_email) EditText _emailText;
+    @BindView(R.id.input_password) EditText _passwordText;
+    @BindView(R.id.input_reEnterPassword) EditText _reEnterPasswordText;
+    @BindView(R.id.btn_signup) Button _signupButton;
+    @BindView(R.id.btn_terms) Button _btn_terms;
+    @BindView(R.id.btn_privacy) Button _btn_privacy;
+    @BindView(R.id.btn_fb_login) Button _fb_login;
+    @BindView(R.id.btn_google) Button _gog_login;
+    @BindView(R.id.link_login) TextView _loginLink;
+
+
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_create_account);
+        ButterKnife.bind(this);
+        Bundle x = this.getIntent().getExtras();
+        if (x != null) {
+            User= x.getInt(OPCION);
+        }
+
+        _signupButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                signup();
+            }
+        });
+
+        _loginLink.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Finish the registration screen and return to the Login activity
+                Intent intent = new Intent(getApplicationContext(),LoginActivity.class);
+                startActivity(intent);
+                finish();
+                overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+            }
+        });
+
+
+        _btn_privacy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialogo(CreateAccountActivity.this, getString(R.string.privacy_policy),"Privacy Policy\n" +
+                        "This privacy policy sets out how Establishment Labs S.A. uses and protects any information that you give Establishment Labs S.A. when you use this website. All personal data is stored in a secure data base.\n" +
+                        "\n" +
+                        "Establishment Labs S.A. is committed to ensuring that your privacy is protected. Should we ask you to provide certain information by which you can be identified when using this website, then you can be assured that it will only be used in accordance with this privacy statement.\n" +
+                        "\n" +
+                        "Establishment Labs S.A. may change this policy from time to time by updating this page. You should check this page from time to time to ensure that you agree with any changes implemented. This policy is effective from March 1st, 2010. (Latest Revision: March 1st, 2014)\n" +
+                        "\n" +
+                        "\n" +
+                        "What we collect\n" +
+                        "We may collect the following information:\n" +
+                        "\n" +
+                        "Name\n" +
+                        "Address\n" +
+                        "E-mail address\n" +
+                        "Telephone number\n" +
+                        "Implants serial numbers\n" +
+                        "Name of attending surgeons\n" +
+                        "Procedures dates\n" +
+                        "You may decide not to provide the information requested in the forms or anywhere in the website, but the submittal of the complete information required may be a condition to receive certain benefits, warranties or coverage that will not be granted, provided or furnished unless the complete information is provided.\n" +
+                        "\n" +
+                        "What we do with the information we gather\n" +
+                        "We will not share your medical information except as required by the law or with your express authorization. We will use your personal data and information in accordance and conformity with the terms described in the Directive 95/46/EC of the European Parliament and the Council of 24 October 1995, and other applicable international and local regulations.\n" +
+                        "\n" +
+                        "We require this information to understand your needs and provide you with a better service, and in particular for the following reasons:\n" +
+                        "\n" +
+                        "Internal record keeping.\n" +
+                        "Mandatory Materiovigilance purposes.\n" +
+                        "Ascertain and verification of your participation in determined warranty or insurance programs.\n" +
+                        "We may use your information to contact you if there may be any important health information you should be given.\n" +
+                        "We may use the information to improve our products and services.\n" +
+                        "We may send you emails about new products, special offers or other information which we think you may find interesting using the email address which you have provided.\n" +
+                        "From time to time, we may also use your information to contact you for market research or medical research purposes. We may contact you by email, phone, fax or mail. We may use the information to customize the website according to your interests.\n" +
+                        "We may share the Information with your consent or as you may direct.\n" +
+                        "We may share the information with our insurance providers, who shall protect your information with the same care and only use your information in accordance with our instructions.\n" +
+                        "We may share the information with our service providers, who shall protect your information and only use your information in accordance with our instructions.\n" +
+                        "We may also disclose information when required by law or by the courts of the countries where we have operations.\n" +
+                        "Security\n" +
+                        "We are committed to ensuring that your information is secure. In order to prevent unauthorized access or disclosure, we have put in place suitable physical, electronic and managerial procedures to safeguard and secure the information we collect online.\n" +
+                        "\n" +
+                        "How we use cookies\n" +
+                        "A cookie is a small file which asks permission to be placed on your computer’s hard drive. Once you agree, the file is added and the cookie helps analyze web traffic or lets you know when you visit a particular site. Cookies allow web applications to respond to you as an individual. The web application can tailor its operations to your needs, likes and dislikes by gathering and remembering information about your preferences.\n" +
+                        "\n" +
+                        "We use traffic log cookies to identify which pages are being used. This helps us analyze data about web page traffic and improve our website in order to tailor it to customer needs. We only use this information for statistical analysis purposes and then the data is removed from the system.\n" +
+                        "\n" +
+                        "Overall, cookies help us provide you with a better website, by enabling us to monitor which pages you find useful and which you do not. A cookie in no way gives us access to your computer or any information about you, other than the data you choose to share with us.\n" +
+                        "\n" +
+                        "You can choose to accept or decline cookies. Most web browsers automatically accept cookies, but you can usually modify your browser setting to decline cookies if you prefer. This may prevent you from taking full advantage of the website.\n" +
+                        "\n" +
+                        "Controlling your personal information\n" +
+                        "You may choose to restrict the collection or use of your personal information in the following ways:\n" +
+                        "\n" +
+                        "If you have previously agreed to us using your personal information for direct marketing purposes, you may change your mind (opt-out) at any time by writing to or emailing us at info@establishmentlabs.com\n" +
+                        "\n" +
+                        "You may also request to exclude from our data base any information which is not required by materiovigilance regulations to be kept. Nevertheless, that will also be understood as a resignation of any right or claim which exists or may exist, on any program, warranty or coverage which may have been granted with the condition of providing the required information.\n" +
+                        "\n" +
+                        "If you believe that any information we are holding on you is incorrect or incomplete, or there is any information that may have changed or needs updating, please write to or email us as soon as possible, at the address info@establishmentlabs.com. We will promptly correct any information found to be incorrect.\n" +
+                        "\n" +
+                        "We will not sell, distribute or lease your personal information to third parties unless we are required by law to do so. We may use your personal information to send you promotional information which we think you may find interesting.\n" +
+                        "\n" +
+                        "Links to other websites\n" +
+                        "Our website may contain links to other websites of interest. However, once you have used these links to leave our site, you should note that we do not have any control over that other website. Therefore, we cannot be responsible for the protection and privacy of any information which you provide whilst visiting such sites and such sites are not governed by this privacy statement. You should exercise caution and look at the privacy statement applicable to the website in question.");
+            }
+        });
+
+        _btn_terms.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialogo(CreateAccountActivity.this, getString(R.string.terms_and_conditions),TERMS);
+            }
+        });
+
+
+        List<String> types = new ArrayList<String>();
+        types.add(getString(R.string.Patient));
+        types.add(getString(R.string.Doctor));
+
+
+
+
+        Type listType = new TypeToken<ArrayList<Country>>(){}.getType();
+        String json = CADENA_PAISES;
+        Gson gson = new Gson();
+        List<Country> paises = gson.fromJson(CADENA_PAISES, listType);
+        List<String> countries = new ArrayList<String>();
+        for (int i = 0; i < paises.size(); i++) {
+            countries.add(paises.get(i).getName());
+        }
+
+
+
+        // Creating adapter for spinner
+        ArrayAdapter<String> dataAdapter2 = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, countries);
+
+
+        // Drop down layout style - list view with radio button
+        dataAdapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        _country.setAdapter(dataAdapter2);
+    }
+
+
+    public void signup() {
+
+        Log.d(TAG, "Signup");
+
+        if (!validate()) {
+            onSignupFailed();
+            return;
+        }
+
+        _signupButton.setEnabled(false);
+
+        final ProgressDialog progressDialog = new ProgressDialog(CreateAccountActivity.this,
+                R.style.AppThemeMain2_Dark_Dialog);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setMessage("Creating Account...");
+        progressDialog.show();
+
+        String name = _nameText.getText().toString();
+        String address = _lnameText.getText().toString();
+        String email = _emailText.getText().toString();
+        String password = _passwordText.getText().toString();
+        String reEnterPassword = _reEnterPasswordText.getText().toString();
+
+        // TODO: Implement your own signup logic here.
+
+        new android.os.Handler().postDelayed(
+                new Runnable() {
+                    public void run() {
+                        // On complete call either onSignupSuccess or onSignupFailed
+                        // depending on success
+                        onSignupSuccess();
+                        // onSignupFailed();
+                        progressDialog.dismiss();
+                    }
+                }, 3000);
+    }
+
+    public void dialogo (Context context,String titulo,String mensaje){
+
+        AlertDialog dialog = new AlertDialog.Builder(context)
+
+                .setTitle(titulo)
+                .setMessage(mensaje)
+                .setPositiveButton(R.string.Accept, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .setNegativeButton(R.string.Dissmiss, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        _terms.setChecked(false);
+                        dialog.dismiss();
+                        // User cancelled the dialog
+                    }
+                })
+                .setIcon(android.R.drawable.ic_dialog_info)
+                .show();
+        TextView textView = (TextView) dialog.findViewById(android.R.id.message);
+        textView.setScroller(new Scroller(dialog.getContext()));
+        textView.setVerticalScrollBarEnabled(true);
+        textView.setMovementMethod(new ScrollingMovementMethod());
+
+    }
+
+
+    public void onSignupSuccess() {
+        _signupButton.setEnabled(true);
+        setResult(RESULT_OK, null);
+        finish();
+    }
+
+    public void onSignupFailed() {
+        Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG).show();
+
+        _signupButton.setEnabled(true);
+    }
+
+    public boolean validate() {
+        boolean valid = true;
+
+        String name = _nameText.getText().toString();
+        String lname = _lnameText.getText().toString();
+        String email = _emailText.getText().toString();
+        String password = _passwordText.getText().toString();
+        String reEnterPassword = _reEnterPasswordText.getText().toString();
+
+        if (name.isEmpty() || name.length() < 3) {
+            _nameText.setError("at least 3 characters");
+            valid = false;
+        } else {
+            _nameText.setError(null);
+        }
+
+        if (lname.isEmpty()) {
+            _lnameText.setError("at least 3 characters");
+            valid = false;
+        } else {
+            _lnameText.setError(null);
+        }
+
+
+        if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            _emailText.setError("enter a valid email lname");
+            valid = false;
+        } else {
+            _emailText.setError(null);
+        }
+
+
+        if (password.isEmpty() || password.length() < 4 || password.length() > 10) {
+            _passwordText.setError("between 4 and 10 alphanumeric characters");
+            valid = false;
+        } else {
+            _passwordText.setError(null);
+        }
+
+        if (reEnterPassword.isEmpty() || reEnterPassword.length() < 4 || reEnterPassword.length() > 10 || !(reEnterPassword.equals(password))) {
+            _reEnterPasswordText.setError("Password Do not match");
+            valid = false;
+        } else {
+            _reEnterPasswordText.setError(null);
+        }
+
+        return valid;
+    }
+
+
+
+
+    public static void createInstance(Activity activity, int usuario) {
+        Intent intent = getLaunchIntent(activity, usuario);
+        activity.startActivity(intent);
+    }
+
+    public static Intent getLaunchIntent(Context context, int usuario) {
+        Intent intent = new Intent(context, CreateAccountActivity.class);
+        intent.putExtra(OPCION,usuario);
+        return intent;
+    }
+}
+

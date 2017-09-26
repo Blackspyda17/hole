@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_home"
+            android:icon="@drawable/ic_home"
+            android:title="@string/Home" />
+        <item
+            android:id="@+id/nav_CTI"
+            android:icon="@drawable/ic_account"
+            android:title= "Clinical Trial Info" />
+        <item
+            android:id="@+id/nav_regist_implant"
+            android:icon="@drawable/ic_register"
+            android:title="@string/register_your_implants" />
+
+        <item
+            android:id="@+id/nav_my_implants"
+            android:icon="@drawable/ic_motiva"
+            android:title="My implants" />
+
+        <item
+            android:id="@+id/nav_questionaries"
+            android:icon="@drawable/ic_questionaries_24dp"
+            android:title="My Questionaries" />
+        <item
+            android:id="@+id/nav_appoinments"
+            android:icon="@drawable/ic_event_24dp"
+            android:title="My appoiments" />
+
+
+
+    </group>
+
+    <item android:title="@string/more_info">
+        <menu>
+            <item
+                android:id="@+id/nav_help"
+                android:icon="@drawable/ic_contact"
+                android:title="Contact Us" />
+
+            <item
+                android:id="@+id/nav_faq"
+                android:icon="@drawable/ic_help_black_24dp"
+                android:title="FAQ" />
+
+        </menu>
+    </item>
+
+</menu>
