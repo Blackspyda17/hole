@@ -1,1 +1,0 @@
-# motivaimagine-android-trial-app
