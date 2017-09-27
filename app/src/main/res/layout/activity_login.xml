@@ -21,8 +21,9 @@
 
             <Button
                 android:id="@+id/btn_google"
+                style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
+                android:layout_height="35dp"
                 android:layout_marginBottom="8dp"
                 android:background="@drawable/gmail_button_bg"
                 android:drawableLeft="@drawable/ic_googlep"
@@ -35,8 +36,9 @@
 
             <Button
                 android:id="@+id/btn_fb_login"
+                style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
+                android:layout_height="35dp"
                 android:background="@drawable/fb_button_bg"
                 android:drawableLeft="@drawable/fb_logo"
                 android:padding="5dp"
@@ -56,12 +58,13 @@
                 android:layout_marginTop="16dp">
 
 
-                <View
-                    android:layout_width="wrap_content"
-                    android:layout_height="2dp"
-                    android:layout_centerVertical="true"
-                    android:layout_toRightOf="@+id/orText"
-                    android:background="@android:color/black" />
+
+                <!--      <View
+                          android:layout_width="wrap_content"
+                          android:layout_height="2dp"
+                          android:layout_centerVertical="true"
+                          android:layout_toRightOf="@+id/orText"
+                          android:background="@android:color/black" />-->
 
                 <TextView
                     android:id="@+id/orText"
@@ -71,15 +74,15 @@
                     android:layout_centerHorizontal="true"
                     android:layout_marginLeft="5dp"
                     android:layout_marginRight="5dp"
-                    android:text="OR"
+                    android:text="Or"
                     android:textColor="@android:color/black" />
 
-                <View
-                    android:layout_width="wrap_content"
-                    android:layout_height="2dp"
-                    android:layout_centerVertical="true"
-                    android:layout_toLeftOf="@+id/orText"
-                    android:background="@android:color/black" />
+                <!--            <View
+                                android:layout_width="wrap_content"
+                                android:layout_height="2dp"
+                                android:layout_centerVertical="true"
+                                android:layout_toLeftOf="@+id/orText"
+                                android:background="@android:color/black" />-->
 
             </RelativeLayout>
 

@@ -69,7 +69,9 @@
                 android:layout_marginTop="16dp"
                 android:background="@drawable/inov_button_bg"
                 android:text="@string/change_password"
-                android:textColor="@android:color/white" />
+                android:textAppearance="@style/TextAppearance.AppCompat"
+                android:textColor="@color/colorPrimaryText"
+                android:textSize="18sp" />
 
         </LinearLayout>
 

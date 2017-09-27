@@ -1,12 +1,11 @@
 package com.motivaimagine.motivaimagine_trial;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import java.util.ArrayList;
-import java.util.List;
 
 
 public class doctor_list extends AppCompatActivity {
@@ -18,6 +17,8 @@ public class doctor_list extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_doctor_list);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         rv = (RecyclerView)findViewById(R.id.rv_docs);
         rv.setHasFixedSize(true);

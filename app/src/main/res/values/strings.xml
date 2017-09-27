@@ -1,26 +1,26 @@
 <resources>
     <string name="app_name">Motiva Implants® Clinical Trial</string>
-    <string name="title_activity_login">Sign in</string>
+    <string name="title_activity_login" translatable="false">Sign in</string>
 
     <!-- Strings related to login -->
-    <string name="prompt_email">Email</string>
-    <string name="prompt_password">Password</string>
+    <string name="prompt_email" translatable="false">Email</string>
+    <string name="prompt_password" translatable="false">Password</string>
 
-    <string name="permission_rationale">"Contacts permissions are needed for providing email
+    <string name="permission_rationale" translatable="false">"Contacts permissions are needed for providing email
         completions."
     </string>
-    <string name="title_activity_create_account">Create Account</string>
-    <string name="title_activity_main2">Main2Activity</string>
+    <string name="title_activity_create_account" translatable="false">Create Account</string>
+    <string name="title_activity_main2" translatable="false">Main2Activity</string>
 
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
+    <string name="navigation_drawer_close" translatable="false">Close navigation drawer</string>
 
 
-    <string name="title_activity_my_account">MyAccount</string>
-    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="title_activity_my_account" translatable="false">MyAccount</string>
+    <string name="section_format" translatable="false">Hello World from section: %1$d</string>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>
     <string name="About">About</string>
     <string name="Accept">Accept</string>
     <string name="Add">Add</string>
@@ -58,7 +58,6 @@
     <string name="No">No</string>
     <string name="November">November</string>
     <string name="October">October</string>
-    <string name="Ok">Ok</string>
     <string name="Password">Password</string>
     <string name="Patient">Patient</string>
     <string name="Processing">Processing</string>
@@ -73,9 +72,9 @@
     <string name="Type">Type</string>
     <string name="Volume">Volume</string>
     <string name="Yes">Yes</string>
-    <string name="action_settings">Settings</string>
-    <string name="action_sign_in">Sign in or register</string>
-    <string name="action_sign_in_short">Sign in</string>
+    <string name="action_settings" translatable="false">Settings</string>
+    <string name="action_sign_in" translatable="false">Sign in or register</string>
+    <string name="action_sign_in_short" translatable="false">Sign in</string>
     <string name="active_warranty">Active warranty</string>
     <string name="already_have_an_account">Already have an account</string>
     <string name="assistants_name">Assistants name</string>
@@ -96,10 +95,9 @@
     <string name="edit_profile_picture">Edit profile picture</string>
     <string name="electronic_serial_number">Electronic serial number</string>
     <string name="email_address">Email address</string>
-    <string name="error_field_required">Error field required</string>
-    <string name="error_incorrect_password">Error incorrect password</string>
-    <string name="error_invalid_email">Error invalid email</string>
-    <string name="error_invalid_password">Error invalid password</string>
+    <string name="error_incorrect_password" translatable="false">Error incorrect password</string>
+    <string name="error_invalid_email" translatable="false">Error invalid email</string>
+    <string name="error_invalid_password" translatable="false">Error invalid password</string>
     <string name="expiration_date">Expiration date</string>
     <string name="extend_your_warranty">Extend your warranty</string>
     <string name="extended_warranty">Extended warranty</string>
@@ -202,33 +200,33 @@
     <string name="your_warranty_proof_of_purchase">Your warranty proof of purchase</string>
     <string name="youve_been_away_for_too_long_please_login_again">you\'ve been away for too long please login again</string>
     <string name="sig_in">Sig in</string>
-    <string name="Or">or</string>
+    <string name="Or">Or</string>
     <string name="profile">Profile</string>
 
 
     <!--alarma example-->
 
 
-    <string name="add_alarm">Add New Alarm</string>
-    <string name="new_alarm_added">New alarm added successfully</string>
-    <string name="form_hint_title">Alarm title (required)</string>
-    <string name="form_hint_description">Alarm description (optional)</string>
-    <string name="error_title_min_characters">At least %1$d characters</string>
-    <string name="main_activity_explanation">Click the button to try it!</string>
-    <string name="main_activity_explanation_disclaimer">This app DOES NOT set up alarms for real!</string>
-    <string-array name="steps_titles">
+    <string name="add_alarm" translatable="false">Add New Alarm</string>
+    <string name="new_alarm_added" translatable="false">New alarm added successfully</string>
+    <string name="form_hint_title" translatable="false">Alarm title (required)</string>
+    <string name="form_hint_description" translatable="false">Alarm description (optional)</string>
+    <string name="error_title_min_characters" translatable="false">At least %1$d characters</string>
+    <string name="main_activity_explanation" translatable="false">Click the button to try it!</string>
+    <string name="main_activity_explanation_disclaimer" translatable="false">This app DOES NOT set up alarms for real!</string>
+    <string-array name="steps_titles" translatable="false">
         <item>Title</item>
         <item>Description</item>
         <item>Time</item>
         <item>Week schedule</item>
     </string-array>
-    <string-array name="steps_subtitles">
+    <string-array name="steps_subtitles" translatable="false">
         <item>Title of the alarm</item>
         <item>Description of the alarm</item>
         <item>Time when the alarm will go off</item>
         <item>Week schedule of the alarm</item>
     </string-array>
-    <string-array name="week_days">
+    <string-array name="week_days" translatable="false">
         <item>M</item>
         <item>T</item>
         <item>W</item>
@@ -239,10 +237,10 @@
     </string-array>
 
     <!-- We can overwrite the values of the library's strings in order to customize them -->
-    <string name="vertical_form_stepper_form_discard_question">Discard alarm?</string>
-    <string name="vertical_form_stepper_form_info_will_be_lost">All the information about this new alarm will be lost</string>
-    <string name="vertical_form_stepper_form_confirm_button">Te amo</string>
-    <string name="vertical_form_stepper_form_continue">Te amo</string>
-    <string name="vertical_form_stepper_form_sending_data_message">Adding new alarm…</string>
+    <string name="vertical_form_stepper_form_discard_question" translatable="false">Discard alarm?</string>
+    <string name="vertical_form_stepper_form_info_will_be_lost" translatable="false">All the information about this new alarm will be lost</string>
+    <string name="vertical_form_stepper_form_confirm_button" translatable="false">Te amo</string>
+    <string name="vertical_form_stepper_form_continue" translatable="false">Te amo</string>
+    <string name="vertical_form_stepper_form_sending_data_message" translatable="false">Adding new alarm…</string>
 
 </resources>
