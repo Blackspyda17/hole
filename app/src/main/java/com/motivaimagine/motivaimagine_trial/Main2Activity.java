@@ -16,12 +16,15 @@ import android.view.MenuItem;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import java.io.Serializable;
+
 public class Main2Activity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     private static final String OPCION = "Opc";
+    private static final String USUARIO = "User";
     public Toolbar toolbar;
     boolean salir=false;
-
+    public User usuario;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -158,14 +161,15 @@ public class Main2Activity extends AppCompatActivity
 
 
 
-    public static void createInstance(Activity activity, int usuario) {
-        Intent intent = getLaunchIntent(activity, usuario);
+    public static void createInstance(Activity activity, int usuario, User user) {
+        Intent intent = getLaunchIntent(activity, usuario,user);
         activity.startActivity(intent);
     }
 
-    public static Intent getLaunchIntent(Context context, int usuario) {
+    public static Intent getLaunchIntent(Context context, int usuario,User user) {
         Intent intent = new Intent(context, Main2Activity.class);
         intent.putExtra(OPCION,usuario);
+        intent.putExtra(USUARIO, (Serializable) user);
         return intent;
     }
 

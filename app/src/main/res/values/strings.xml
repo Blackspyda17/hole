@@ -142,7 +142,7 @@
     <string name="please_try_again">Please try again</string>
     <string name="please_wait">Please wait</string>
     <string name="please_wait_15_min_before_requesting_a_new_link">Please wait 15 min before requesting a new link</string>
-    <string name="privacy_policy">Privacy policy</string>
+    <string name="privacy_policy">Privacy Policy</string>
     <string name="product_replacement">Product replacement</string>
     <string name="purchase_an_extended_warranty">Purchase an extended warranty</string>
     <string name="recover_your_password">Recover your password</string>
@@ -161,10 +161,10 @@
     <string name="select_all_the_doctors_that_this_person_is_going_to_work_for">Select all the doctors that this person is going to work for</string>
     <string name="serial_number">Serial number</string>
     <string name="set_new_password">Set new password</string>
-    <string name="sign_in_with_facebook">Sign in with facebook</string>
-    <string name="sign_in_with_google">Sign in with google</string>
-    <string name="sign_up_with_facebook">Sign up with facebook</string>
-    <string name="sign_up_with_google">Sign up with google</string>
+    <string name="sign_in_with_facebook">Sign in with Facebook</string>
+    <string name="sign_in_with_google">Sign in with Google</string>
+    <string name="sign_up_with_facebook">Sign up with Facebook</string>
+    <string name="sign_up_with_google">Sign up with Google</string>
     <string name="sign_up_with_your_email_address">Sign up with your email address</string>
     <string name="sort_by">Sort by</string>
     <string name="surgeons_name">Surgeon\'s name</string>
@@ -200,7 +200,7 @@
     <string name="your_warranty_proof_of_purchase">Your warranty proof of purchase</string>
     <string name="youve_been_away_for_too_long_please_login_again">you\'ve been away for too long please login again</string>
     <string name="sig_in">Sig in</string>
-    <string name="Or">Or</string>
+    <string name="Or">or</string>
     <string name="profile">Profile</string>
 
 
@@ -242,5 +242,4 @@
     <string name="vertical_form_stepper_form_confirm_button" translatable="false">Te amo</string>
     <string name="vertical_form_stepper_form_continue" translatable="false">Te amo</string>
     <string name="vertical_form_stepper_form_sending_data_message" translatable="false">Adding new alarm…</string>
-
 </resources>

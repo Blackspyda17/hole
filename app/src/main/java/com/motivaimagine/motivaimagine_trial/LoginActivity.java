@@ -296,6 +296,8 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         public void onUserInfoCompleted(User user) {
             progressDialog.dismiss();
+            //logueo
+
             new AlertDialog.Builder(LoginActivity.this)
                     .setTitle("Resultado")
                     .setMessage("Name:" + user.name + " \nLastname: " + user.lastname)
