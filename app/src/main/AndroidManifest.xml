@@ -51,7 +51,7 @@
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.motivaimagine.motivaimagine_trial.MainActivity" />
+                android:value="com.motivaimagine.motivaimagine_trial.doctor_list" />
         </activity>
         <activity
             android:name=".Main2Activity"
@@ -60,7 +60,13 @@
         <activity
             android:name=".doctor_list"
             android:label="Select Yout Doctor"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/AppTheme" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.motivaimagine.motivaimagine_trial.MainActivity" />
+            </activity>
+
+
         <activity android:name=".forms_menu" />
         <activity android:name=".forgot_pass" />
         <activity android:name=".Main_modules" />
