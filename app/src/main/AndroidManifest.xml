@@ -39,20 +39,14 @@
             android:name=".LoginActivity"
             android:label="@string/Login"
             android:parentActivityName=".MainActivity"
-            android:theme="@style/AppTheme">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.motivaimagine.motivaimagine_trial.MainActivity" />
-        </activity>
+            android:theme="@style/AppTheme"/>
+
         <activity
             android:name=".CreateAccountActivity"
             android:label="@string/Register"
-            android:parentActivityName=".MainActivity"
-            android:theme="@style/AppTheme">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.motivaimagine.motivaimagine_trial.doctor_list" />
-        </activity>
+            android:parentActivityName=".doctor_list"
+            android:theme="@style/AppTheme"/>
+
         <activity
             android:name=".Main2Activity"
             android:label="@string/Home"
@@ -60,15 +54,16 @@
         <activity
             android:name=".doctor_list"
             android:label="Select Yout Doctor"
-            android:theme="@style/AppTheme" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.motivaimagine.motivaimagine_trial.MainActivity" />
-            </activity>
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme"/>
 
 
         <activity android:name=".forms_menu" />
-        <activity android:name=".forgot_pass" />
+        <activity android:name=".forgot_pass"
+                  android:label="@string/recover_your_password"
+                  android:parentActivityName=".LoginActivity"
+                  android:theme="@style/AppTheme"/>
+
         <activity android:name=".Main_modules" />
         <activity android:name=".modules" />
         <activity android:name=".forms_atep_1"></activity>

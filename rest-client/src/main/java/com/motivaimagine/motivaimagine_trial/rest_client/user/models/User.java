@@ -5,10 +5,12 @@ package com.motivaimagine.motivaimagine_trial.rest_client.user.models;
  */
 
 public class User {
-    public String username;
-    public String token;
     public int id;
+    public String token;
+    public int type;
     public String name;
     public String lastname;
+    public String email;
+    public String picture;
 }
 
