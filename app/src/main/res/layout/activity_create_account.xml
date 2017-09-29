@@ -16,7 +16,9 @@
     android:orientation="vertical"
     android:paddingTop="36dp"
     android:paddingLeft="24dp"
-    android:paddingRight="24dp">
+    android:paddingRight="24dp"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
 
 
         <Button
@@ -72,7 +74,7 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="5dp"
-                android:text="Or"
+                android:text="@string/Or"
                 android:textColor="@android:color/black" />
 
 <!--            <View
@@ -180,7 +182,6 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="16dp"
             android:layout_marginTop="16dp"
-            android:checked="true"
             android:text="@string/i_have_read_and_agree_with_the_terms_and_conditions_and_privacy_policy_for_this_website_and_registra" />
 
         <Button

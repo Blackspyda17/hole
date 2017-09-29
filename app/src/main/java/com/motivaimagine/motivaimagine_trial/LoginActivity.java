@@ -15,10 +15,11 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.motivaimagine.motivaimagine_trial.rest_client.user.models.User;
+
 import com.motivaimagine.motivaimagine_trial.rest_client.user.UserController;
 import com.motivaimagine.motivaimagine_trial.rest_client.user.listeners.LoginListener;
 import com.motivaimagine.motivaimagine_trial.rest_client.user.listeners.UserInfoListener;
+import com.motivaimagine.motivaimagine_trial.rest_client.user.models.User;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -297,12 +298,13 @@ public class LoginActivity extends AppCompatActivity {
         public void onUserInfoCompleted(User user) {
             progressDialog.dismiss();
             //logueo
-
             new AlertDialog.Builder(LoginActivity.this)
                     .setTitle("Resultado")
                     .setMessage("Name:" + user.name + " \nLastname: " + user.lastname)
                     .show();
-        }
+
+      Main2Activity.createInstance(LoginActivity.this,user);
+}
 
         @Override
         public void onUserInfoError(String message) {

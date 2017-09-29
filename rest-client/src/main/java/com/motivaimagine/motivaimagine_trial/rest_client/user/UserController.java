@@ -53,7 +53,7 @@ public class UserController extends BaseService {
 
                     listener.onLoginCompleted(id,token);
                 } catch (JSONException e) {
-                    listener.onLoginError("Ocurrió un error al interpretar la información");
+                    listener.onLoginError("Ocurrió un error al interpretar la información_!");
                 }
             }
         }, new Response.ErrorListener() {
@@ -77,16 +77,16 @@ public class UserController extends BaseService {
             @Override
             public void onResponse(JSONObject response) {
                 try{
-                    User user = new Gson().fromJson(response.toString(),User.class);
+                    User user = new Gson().fromJson(String.valueOf(response),User.class);
                     listener.onUserInfoCompleted(user);
                 }catch (Exception e){
-                    listener.onUserInfoError("Ocurrió un error al interpretar la información");
+                    listener.onUserInfoError("Ocurrió un error al interpretar la información_2");
                 }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                listener.onUserInfoError("Ocurrió un error al realizar la petición");
+                listener.onUserInfoError("Ocurrió un error al realizar la petición_3");
             }
         });
 
