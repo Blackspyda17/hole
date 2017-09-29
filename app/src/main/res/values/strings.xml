@@ -108,7 +108,7 @@
     <string name="health_coach">Health coach</string>
     <string name="forgot_password_get_help">Forgot password? get help</string>
     <string name="how_many_implants_do_you_have">How many implants do you have?</string>
-    <string name="i_have_read_and_agree_with_the_terms_and_conditions_and_privacy_policy_for_this_website_and_registra">I have read and agree with the terms and conditions and privacy policy for this website and registration</string>
+    <string name="i_have_read_and_agree_with_the_terms_and_conditions_and_privacy_policy_for_this_website_and_registra">I have read and agree with the terms and conditions and privacy policy for this application and registration</string>
     <string name="implant_registration">Implant registration</string>
     <string name="implant_type">Implant type</string>
     <string name="last_name">Last name</string>

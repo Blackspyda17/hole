@@ -13,15 +13,26 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.mikhaellopez.circularimageview.CircularImageView;
+import com.motivaimagine.motivaimagine_trial.rest_client.user.models.User;
+
 import java.io.Serializable;
+
 
 public class Main2Activity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     private static final String OPCION = "Opc";
     private static final String USUARIO = "User";
+
+    private CircularImageView _profileImage;
+    private TextView _name;
+    private TextView _email;
     public Toolbar toolbar;
     boolean salir=false;
     public User usuario;
@@ -31,19 +42,26 @@ public class Main2Activity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+
         toolbar = (Toolbar) findViewById(R.id.toolbar);
+
         setSupportActionBar(toolbar);
-
-
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        View hView =  navigationView.getHeaderView(0);
+
+        _name= (TextView) hView.findViewById(R.id.txt_name_draw);
+        _email= (TextView) hView.findViewById(R.id.txt_mail_draw);
+        _profileImage= (CircularImageView) hView.findViewById(R.id.profileImage);
+
+
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+
+
 
         FragmentManager fragmentManager=getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.contenedor,new Frag_home()).commit();
@@ -56,6 +74,13 @@ public class Main2Activity extends AppCompatActivity
                 startActivity(Logear);
             }
         });*/
+
+
+        Bundle x = this.getIntent().getExtras();
+        if (x != null) {
+            usuario= (User) x.getSerializable(USUARIO);
+            displayProfileInfo(usuario);
+        }
     }
 
     @Override
@@ -161,17 +186,29 @@ public class Main2Activity extends AppCompatActivity
 
 
 
-    public static void createInstance(Activity activity, int usuario, User user) {
-        Intent intent = getLaunchIntent(activity, usuario,user);
+    public static void createInstance(Activity activity, User user) {
+        Intent intent = getLaunchIntent(activity,user);
         activity.startActivity(intent);
     }
 
-    public static Intent getLaunchIntent(Context context, int usuario,User user) {
+    public static Intent getLaunchIntent(Context context,User user) {
         Intent intent = new Intent(context, Main2Activity.class);
-        intent.putExtra(OPCION,usuario);
         intent.putExtra(USUARIO, (Serializable) user);
         return intent;
     }
+    private void displayProfileInfo(User profile) {
 
+
+        String email= profile.getEmail();
+        String name = profile.getName()+" "+profile.getLastname();
+        String photoUrl = profile.getPicture();
+
+        _name.setText(""+name);
+        _email.setText(""+email);
+
+        Glide.with(getApplicationContext())
+                .load(photoUrl)
+                .into(_profileImage);
+    }
 
 }
