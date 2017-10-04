@@ -16,10 +16,13 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.FacebookSdk;
 import com.motivaimagine.motivaimagine_trial.rest_client.user.UserController;
 import com.motivaimagine.motivaimagine_trial.rest_client.user.listeners.LoginListener;
 import com.motivaimagine.motivaimagine_trial.rest_client.user.listeners.UserInfoListener;
 import com.motivaimagine.motivaimagine_trial.rest_client.user.models.User;
+import com.mukeshsolanki.sociallogin.facebook.FacebookHelper;
+import com.mukeshsolanki.sociallogin.facebook.FacebookListener;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -29,12 +32,13 @@ import butterknife.ButterKnife;
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity implements FacebookListener {
     private static final String OPCION = "Opc";
     private String[] PERMISSION = new String[]{"public_profile", "email"};
     private int User;
     private static final String TAG = "LoginActivity";
     private static final int REQUEST_SIGNUP = 0;
+    private FacebookHelper mFacebook;
 
 
     @BindView(R.id.or_layout) RelativeLayout _or;
@@ -53,7 +57,9 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
-//        FacebookSdk.sdkInitialize(this.getApplicationContext());
+        FacebookSdk.setApplicationId(getResources().getString(R.string.app_id));
+        FacebookSdk.sdkInitialize(this);
+        mFacebook=new FacebookHelper(LoginActivity.this);
 
         Bundle x = this.getIntent().getExtras();
         if (x != null) {
@@ -75,9 +81,9 @@ public class LoginActivity extends AppCompatActivity {
         _fb_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(LoginActivity.this, Main2Activity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
+
+                mFacebook.performSignIn(LoginActivity.this);
+
 /*
                 callbackManager = CallbackManager.Factory.create();
                 LoginManager.getInstance().logInWithReadPermissions(LoginActivity.this, Arrays.asList(PERMISSION));
@@ -179,10 +185,10 @@ public class LoginActivity extends AppCompatActivity {
 
 
 
-/*    @Override
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        callbackManager.onActivityResult(requestCode, resultCode, data);
+        mFacebook.onActivityResult(requestCode, resultCode, data);
 
 
         if (requestCode == REQUEST_SIGNUP) {
@@ -194,7 +200,7 @@ public class LoginActivity extends AppCompatActivity {
                 this.finish();
             }
         }
-    }*/
+    }
 
    /* @Override
     public void onBackPressed() {
@@ -260,6 +266,28 @@ public class LoginActivity extends AppCompatActivity {
         UserController.getInstance().login(this,username,password,new LoginCallback());
     }
 
+    @Override
+    public void onFbSignInFail(String s) {
+        Toast.makeText(getApplicationContext(),s,Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onFbSignInSuccess(String authToken, String userId) {
+        new AlertDialog.Builder(LoginActivity.this)
+                .setTitle("Resultado")
+                .setMessage("token:" + authToken + " \nId: " + userId)
+                .show();
+
+        Main2Activity.createInstance(LoginActivity.this,1,"f",null);
+
+
+    }
+
+    @Override
+    public void onFBSignOut() {
+        Toast.makeText(getApplicationContext(),"Sing Out!!!!",Toast.LENGTH_SHORT).show();
+    }
+
     class LoginCallback implements LoginListener,UserInfoListener {
 
         @Override
@@ -303,7 +331,7 @@ public class LoginActivity extends AppCompatActivity {
                     .setMessage("Name:" + user.name + " \nLastname: " + user.lastname)
                     .show();
 
-      Main2Activity.createInstance(LoginActivity.this,user);
+         Main2Activity.createInstance(LoginActivity.this,1,null,user);
 }
 
         @Override

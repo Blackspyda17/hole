@@ -41,9 +41,14 @@
                 android:title="Contact Us" />
 
             <item
-                android:id="@+id/nav_faq"
-                android:icon="@drawable/ic_help_black_24dp"
-                android:title="FAQ" />
+            android:id="@+id/nav_faq"
+            android:icon="@drawable/ic_help_black_24dp"
+            android:title="FAQ" />
+
+            <item
+                android:id="@+id/nav_log_out"
+                android:icon="@drawable/ic_exit"
+                android:title="Log out" />
 
         </menu>
     </item>

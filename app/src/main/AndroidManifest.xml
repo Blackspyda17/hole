@@ -25,27 +25,34 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        >
+
         <activity
             android:name=".MainActivity"
             android:theme="@style/AppTheme_Norm">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+
         <activity
             android:name=".LoginActivity"
             android:label="@string/Login"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme"/>
 
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/app_id" />
+
         <activity
             android:name=".CreateAccountActivity"
             android:label="@string/Register"
             android:parentActivityName=".doctor_list"
             android:theme="@style/AppTheme"/>
+
+
 
         <activity
             android:name=".Main2Activity"
@@ -68,5 +75,6 @@
         <activity android:name=".modules" />
         <activity android:name=".forms_atep_1"></activity>
     </application>
+    
 
 </manifest>

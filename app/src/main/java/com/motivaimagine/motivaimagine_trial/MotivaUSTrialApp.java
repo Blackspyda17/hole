@@ -2,6 +2,8 @@ package com.motivaimagine.motivaimagine_trial;
 
 import android.app.Application;
 
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
 
 
 /**
@@ -13,7 +15,7 @@ public class MotivaUSTrialApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-    /*    FacebookSdk.sdkInitialize(getApplicationContext());
-        AppEventsLogger.activateApp(this);*/
+        FacebookSdk.sdkInitialize(this);
+        AppEventsLogger.activateApp(this);
     }
 }
