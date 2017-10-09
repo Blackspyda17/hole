@@ -78,6 +78,8 @@ public class implant_regist_1 extends Fragment implements Step{
     @Override
     public void onError(@NonNull VerificationError error) {
         //handle error inside of the fragment, e.g. show error on EditText
+
+
     }
 
 }

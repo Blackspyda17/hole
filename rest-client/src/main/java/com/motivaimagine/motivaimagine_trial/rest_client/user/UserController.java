@@ -93,4 +93,37 @@ public class UserController extends BaseService {
         getDefaultQueue(context).add(request);
     }
 
+    public void Register (Context context,String email, String name,String lastname,String method,String platform,String country_id, String password,String token, final LoginListener listener){
+        if(listener==null)
+            return;
+        listener.onLoginStart();
+        String url = BuildConfig.REST_URL.concat(String.format(context.getString(R.string.uri_register),""+email,name,lastname,method,platform,country_id,password,token));
+
+
+
+        JsonObjectRequest request = getDefaultRequest(Request.Method.POST, url, null, false, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    int id = response.getInt("id");
+                    String token = response.getString("token");
+
+                    listener.onLoginCompleted(id,token);
+                } catch (JSONException e) {
+                    listener.onLoginError("Ocurrió un error al interpretar la información_!");
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                listener.onLoginError("ERROR 404");
+            }
+        });
+
+        getDefaultQueue(context).add(request);
+    }
+
+
+
+
 }

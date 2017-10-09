@@ -16,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.webkit.URLUtil;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,15 +29,15 @@ import com.facebook.ProfileTracker;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
-import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.mikhaellopez.circularimageview.CircularImageView;
 import com.motivaimagine.motivaimagine_trial.rest_client.user.models.User;
-import com.mukeshsolanki.sociallogin.facebook.FacebookHelper;
+import com.mukeshsolanki.sociallogin.google.GoogleHelper;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -45,10 +46,13 @@ import java.io.Serializable;
 
 
 public class Main2Activity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener,GoogleApiClient.OnConnectionFailedListener {
+        implements NavigationView.OnNavigationItemSelectedListener {
     private static final String USER_TYPE = "user_type";
     private static final String AUTH_TYPE = "auth_type";
     private static final String USUARIO = "User";
+    private String NAME;
+    private String PHOTO;
+    private String AUTH;
 
     private CircularImageView _profileImage;
     private TextView _name;
@@ -56,9 +60,10 @@ public class Main2Activity extends AppCompatActivity
     public Toolbar toolbar;
     boolean salir=false;
     public User usuario;
-    private FacebookHelper mFacebook;
+    private GoogleHelper mGoogle;
     private ProfileTracker profileTracker;
     private GoogleApiClient googleApiClient;
+    public  Frag_home HOME;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,18 +91,6 @@ public class Main2Activity extends AppCompatActivity
 
 
 
-        FragmentManager fragmentManager=getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.contenedor,new Frag_home()).commit();
-
-/*        Button btn_account = (Button) findViewById(R.id.btn_account);
-        btn_account.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent Logear = new Intent(getApplicationContext(),MyAccount.class);
-                startActivity(Logear);
-            }
-        });*/
-
 
         Bundle x = this.getIntent().getExtras();
         if (x != null) {
@@ -105,10 +98,8 @@ public class Main2Activity extends AppCompatActivity
     switch(x.getInt(USER_TYPE)){
         case 1:
             initprof(x.getString(AUTH_TYPE), x.getSerializable(USUARIO));
-
             break;
         case 2:
-
             break;
 
 
@@ -116,8 +107,13 @@ public class Main2Activity extends AppCompatActivity
 
         }
 
-
-
+        FragmentManager fragmentManager=getSupportFragmentManager();
+        Bundle arguments = new Bundle();
+        arguments.putString("nombre", NAME);
+        arguments.putString("foto", PHOTO);
+        HOME=new Frag_home();
+        HOME.setArguments(arguments);
+        fragmentManager.beginTransaction().replace(R.id.contenedor,HOME).commit();
     }
 
 
@@ -177,8 +173,7 @@ public class Main2Activity extends AppCompatActivity
 
             toolbar.setTitle("Home");
             salir=false;
-            fragmentManager.beginTransaction().replace(R.id.contenedor,new Frag_home())
-                    .commit();
+            fragmentManager.beginTransaction().replace(R.id.contenedor,HOME).commit();
             // Handle the camera action
         } else if (id == R.id.nav_CTI) {
 
@@ -207,7 +202,7 @@ public class Main2Activity extends AppCompatActivity
                     .addToBackStack(null)
                     .commit();
         } else if (id == R.id.nav_appoinments) {
-            toolbar.setTitle("My Appoinmentsx");
+            toolbar.setTitle("My Appoinments");
             fragmentManager.beginTransaction().replace(R.id.contenedor,new appoiments())
                     .addToBackStack(null)
                     .commit();
@@ -216,7 +211,7 @@ public class Main2Activity extends AppCompatActivity
         } else if (id == R.id.nav_faq) {
 
         }else if (id == R.id.nav_log_out) {
-            logout();
+            logout(AUTH);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -239,13 +234,13 @@ public class Main2Activity extends AppCompatActivity
         Intent intent = new Intent(context, Main2Activity.class);
         intent.putExtra(USER_TYPE,user_type);
         intent.putExtra(AUTH_TYPE,auth_type);
-        intent.putExtra(USUARIO, (Serializable) user);
+        intent.putExtra(USUARIO, user);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         return intent;
     }
 
     private void initprof(String auth_type, Serializable user) {
-
+        AUTH=auth_type;
         switch (auth_type){
             case "f":
 
@@ -253,10 +248,12 @@ public class Main2Activity extends AppCompatActivity
                     @Override
                     protected void onCurrentProfileChanged(Profile oldProfile, Profile currentProfile) {
                         if (currentProfile != null) {
-                            displayProfileInfo(currentProfile);
+                            displayProfileInfo('f',currentProfile);
+                            profileTracker.startTracking();
                         }
                     }
                 };
+
 
                 if (AccessToken.getCurrentAccessToken() == null) {
                     goMainScreen();
@@ -265,7 +262,7 @@ public class Main2Activity extends AppCompatActivity
 
                     Profile profile = Profile.getCurrentProfile();
                     if (profile != null) {
-                        displayProfileInfo(profile);
+                        displayProfileInfo('f',profile);
                     } else {
                         Profile.fetchProfileForCurrentAccessToken();
                     }
@@ -273,41 +270,27 @@ public class Main2Activity extends AppCompatActivity
 
                 break;
             case "g":
+
+                GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                        .requestEmail()
+                        .build();
+
+                googleApiClient = new GoogleApiClient.Builder(this)
+                        .enableAutoManage(this, mGoogle)
+                        .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                        .build();
+
+                CheckApiG();
+
                 break;
             default:
-                displayProfileInfo((User) user);
+                displayProfileInfo('n',user);
                 break;
-
-
 
         }
     }
 
 
-    private void displayProfileInfo(User profile) {
-
-        String email= profile.getEmail();
-        String name = profile.getName()+" "+profile.getLastname();
-        String photoUrl = profile.getPicture();
-
-        _name.setText(""+name);
-        _email.setText(""+email);
-
-        Glide.with(getApplicationContext())
-                .load(photoUrl)
-                .into(_profileImage);
-    }
-
-    private void displayProfileInfo(Profile profile) {
-        String name = profile.getName();
-        String photoUrl = profile.getProfilePictureUri(100, 100).toString();
-
-        _name.setText(name);
-
-        Glide.with(getApplicationContext())
-                .load(photoUrl)
-                .into(_profileImage);
-    }
 
     private void requestEmail(AccessToken currentAccessToken) {
         GraphRequest request = GraphRequest.newMeRequest(currentAccessToken, new GraphRequest.GraphJSONObjectCallback() {
@@ -341,78 +324,127 @@ public class Main2Activity extends AppCompatActivity
         startActivity(intent);
     }
 
-    public void logout() {
-        LoginManager.getInstance().logOut();
-        goMainScreen();
-    }
-
-
-    public void logOut() {
-        Auth.GoogleSignInApi.signOut(googleApiClient).setResultCallback(new ResultCallback<Status>() {
-            @Override
-            public void onResult(@NonNull Status status) {
-                if (status.isSuccess()) {
-                    goMainScreen();
-                } else {
-                    Toast.makeText(getApplicationContext(), "Session not closed", Toast.LENGTH_SHORT).show();
+    public void logout(String auth) {
+        switch (auth){
+            case "f":
+                LoginManager.getInstance().logOut();
+                goMainScreen();
+                break;
+            case "g":
+                if(googleApiClient!=null) {
+                    Auth.GoogleSignInApi.signOut(googleApiClient).setResultCallback(new ResultCallback<Status>() {
+                        @Override
+                        public void onResult(@NonNull Status status) {
+                            if (status.isSuccess()) {
+                                goMainScreen();
+                            } else {
+                                Toast.makeText(getApplicationContext(), "Session not closed", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
                 }
-            }
-        });
+                break;
+            case "n":
+                DB mydb=new DB(this.getApplicationContext());
+                mydb.deleteUser(mydb.getIDFUser());
+                goMainScreen();
+
+                break;
+        }
+
     }
+
+
 
     @Override
     protected void onStart() {
         super.onStart();
 
-        OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(googleApiClient);
-        if (opr.isDone()) {
-            GoogleSignInResult result = opr.get();
-            handleSignInResult(result);
-        } else {
-            opr.setResultCallback(new ResultCallback<GoogleSignInResult>() {
-                @Override
-                public void onResult(@NonNull GoogleSignInResult googleSignInResult) {
-                    handleSignInResult(googleSignInResult);
-                }
-            });
+    }
+
+
+    public void CheckApiG(){
+        if(googleApiClient!=null) {
+            OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(googleApiClient);
+
+
+            if (opr.isDone()) {
+                GoogleSignInResult result = opr.get();
+                displayProfileInfo('g',result);
+            } else {
+                opr.setResultCallback(new ResultCallback<GoogleSignInResult>() {
+                    @Override
+                    public void onResult(@NonNull GoogleSignInResult googleSignInResult) {
+                        displayProfileInfo('g',googleSignInResult);
+                    }
+                });
+            }
         }
     }
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        profileTracker.stopTracking();
+      if(profileTracker!=null){
+          profileTracker.stopTracking();
+      }
     }
 
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
-    }
 
-    public void logOut(View view) {
-        Auth.GoogleSignInApi.signOut(googleApiClient).setResultCallback(new ResultCallback<Status>() {
-            @Override
-            public void onResult(@NonNull Status status) {
-                if (status.isSuccess()) {
-                    goMainScreen();
+
+
+
+    private void displayProfileInfo(char opc, Object profile) {
+
+        switch (opc){
+            case 'f':
+                Profile perfil=(Profile) profile;
+                NAME = perfil.getName();
+                PHOTO=perfil.getProfilePictureUri(100, 100).toString();
+
+                _name.setText(NAME);
+
+                Glide.with(getApplicationContext())
+                        .load(PHOTO)
+                        .into(_profileImage);
+                break;
+            case 'g':
+                GoogleSignInResult result=(GoogleSignInResult) profile;
+                if (result.isSuccess()) {
+                    GoogleSignInAccount account = result.getSignInAccount();
+                    NAME =account.getDisplayName();
+                    PHOTO= account.getPhotoUrl()+"";
+                    _name.setText(NAME);
+                    _email.setText(account.getEmail());
+
+                    if(URLUtil.isValidUrl(PHOTO)) {
+                        Glide.with(this).load(account.getPhotoUrl()).into(_profileImage);
+                    }
+
+
                 } else {
-                    Toast.makeText(getApplicationContext(), "Session Closed", Toast.LENGTH_SHORT).show();
+                    goMainScreen();
                 }
-            }
-        });
-    }
+                break;
+            case 'n':
+                User prof=(User) profile;
+                String email= prof.getEmail();
+                NAME = prof.getName()+" "+prof.getLastname();
+                PHOTO= prof.getPicture();
 
-    private void handleSignInResult(GoogleSignInResult result) {
-        if (result.isSuccess()) {
+                _name.setText(""+NAME);
+                _email.setText(""+email);
 
-            GoogleSignInAccount account = result.getSignInAccount();
+                if(URLUtil.isValidUrl(PHOTO)) {
+                    Glide.with(getApplicationContext())
+                            .load(PHOTO)
+                            .into(_profileImage);
+                }
 
-            _name.setText(account.getDisplayName());
-            _email.setText(account.getEmail());
-
-            Glide.with(this).load(account.getPhotoUrl()).into(_profileImage);
-
-        } else {
-            goMainScreen();
+                break;
         }
+
     }
+
+
 }

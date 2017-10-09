@@ -7,7 +7,8 @@ import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import java.util.ArrayList;
+import com.motivaimagine.motivaimagine_trial.rest_client.user.models.User;
+
 import java.util.HashMap;
 
 /**
@@ -38,7 +39,7 @@ public class DB extends SQLiteOpenHelper {
         // TODO Auto-generated method stub
         db.execSQL(
                 "create table user " +
-                        "(id integer primary key, token text, type integer, type integer ,name text, lastname text, email text, picture text)"
+                        "(id integer primary key, token text, type integer, type_id integer ,name text, lastname text, email text, picture text)"
         );
     }
 
@@ -98,18 +99,29 @@ public class DB extends SQLiteOpenHelper {
                 new String[] { Integer.toString(id) });
     }
 
-    public ArrayList<String> getUser() {
-        ArrayList<String> array_list = new ArrayList<String>();
 
+
+    public int getIDFUser () {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res =  db.rawQuery( "select * from user", null );
+        res.moveToFirst();
+        return res.getInt(res.getColumnIndex(USER_COLUMN_ID));
+    }
+
+    public User getUser() {
+        User USER=null;
         //hp = new HashMap();
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor res =  db.rawQuery( "select * from user", null );
         res.moveToFirst();
-
-        while(res.isAfterLast() == false){
-            array_list.add(res.getString(res.getColumnIndex(USER_COLUMN_NAME)));
+        USER = new User(res.getInt(res.getColumnIndex(USER_COLUMN_ID)),res.getString(res.getColumnIndex(USER_COLUMN_TOKEN)),res.getInt(res.getColumnIndex(USER_COLUMN_TYPE)),res.getInt(res.getColumnIndex(USER_COLUMN_TYPE_ID))
+                ,res.getString(res.getColumnIndex(USER_COLUMN_NAME)),res.getString(res.getColumnIndex(USER_COLUMN_LAST_NAME)),res.getString(res.getColumnIndex(USER_COLUMN_NAME)),res.getString(res.getColumnIndex(USER_COLUMN_PICTURE)));
+/*        while(res.isAfterLast() == false){
+            USER = new User(res.getInt(res.getColumnIndex(USER_COLUMN_ID)),res.getString(res.getColumnIndex(USER_COLUMN_TOKEN)),res.getInt(res.getColumnIndex(USER_COLUMN_TYPE)),res.getInt(res.getColumnIndex(USER_COLUMN_TYPE_ID))
+                   ,res.getString(res.getColumnIndex(USER_COLUMN_NAME)),res.getString(res.getColumnIndex(USER_COLUMN_LAST_NAME)),res.getString(res.getColumnIndex(USER_COLUMN_NAME)),res.getString(res.getColumnIndex(USER_COLUMN_PICTURE)));
             res.moveToNext();
-        }
-        return array_list;
+        }*/
+        res.close();
+        return  USER;
     }
 }

@@ -6,9 +6,12 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.URLUtil;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
 
 
 /**
@@ -21,34 +24,45 @@ public class Frag_home extends Fragment {
     private TextView nameTextView;
     private TextView emailTextView;
     private TextView idTextView;
+    private String name;
+    private String photo;
+
+    private static final String NAME = "nombre";
+    private static final String PICTURE = "foto";
 
 
-   /* @Override
+/*
+    public static  Frag_home newInstance(String name,String photo) {
+        Frag_home fragment = new Frag_home();
+        Bundle args = new Bundle();
+        args.putString(name, NAME);
+        args.putString(photo, PICTURE);
+        fragment.setArguments(args);
+        return fragment;
+    }
+*/
+
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            cliente = (Person) getArguments().getSerializable(CLIENTE);
+            name = getArguments().getString(NAME);
+            photo = getArguments().getString(PICTURE);
 
         }
     }
 
-    public static  Frag_home newInstance(String LPagos) {
-        Frag_home fragment = new Frag_home();
-        Bundle args = new Bundle();
-        args.putSerializable(PAGOS, LPagos);
-        fragment.setArguments(args);
-        return fragment;
-    }*/
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
-
         View view=inflater.inflate(R.layout.fragment_home, container, false);
         photoImageView = (ImageView) view.findViewById(R.id.img_profile);
         nameTextView = (TextView) view.findViewById(R.id.nameTextView);
 
+        setComponents();
 
 
 
@@ -95,6 +109,18 @@ public class Frag_home extends Fragment {
 
         // Inflate the layout for this fragment
         return view;
+    }
+
+    private void setComponents() {
+if(name.isEmpty()==false){
+    nameTextView.setText(name);
+
+}
+if(URLUtil.isValidUrl(photo)) {
+    Glide.with(this.getContext())
+            .load(photo)
+            .into(photoImageView);
+}
     }
 /*
 

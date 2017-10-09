@@ -23,6 +23,8 @@ import com.motivaimagine.motivaimagine_trial.rest_client.user.listeners.UserInfo
 import com.motivaimagine.motivaimagine_trial.rest_client.user.models.User;
 import com.mukeshsolanki.sociallogin.facebook.FacebookHelper;
 import com.mukeshsolanki.sociallogin.facebook.FacebookListener;
+import com.mukeshsolanki.sociallogin.google.GoogleHelper;
+import com.mukeshsolanki.sociallogin.google.GoogleListener;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -32,14 +34,15 @@ import butterknife.ButterKnife;
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginActivity extends AppCompatActivity implements FacebookListener {
+public class LoginActivity extends AppCompatActivity implements FacebookListener,GoogleListener {
     private static final String OPCION = "Opc";
     private String[] PERMISSION = new String[]{"public_profile", "email"};
     private int User;
     private static final String TAG = "LoginActivity";
     private static final int REQUEST_SIGNUP = 0;
     private FacebookHelper mFacebook;
-
+    private GoogleHelper mGoogle;
+    private DB mydb;
 
     @BindView(R.id.or_layout) RelativeLayout _or;
     @BindView(R.id.input_email) EditText _emailText;
@@ -60,7 +63,7 @@ public class LoginActivity extends AppCompatActivity implements FacebookListener
         FacebookSdk.setApplicationId(getResources().getString(R.string.app_id));
         FacebookSdk.sdkInitialize(this);
         mFacebook=new FacebookHelper(LoginActivity.this);
-
+        mGoogle = new GoogleHelper(this, this, null);
         Bundle x = this.getIntent().getExtras();
         if (x != null) {
            User= x.getInt(OPCION);
@@ -74,9 +77,7 @@ public class LoginActivity extends AppCompatActivity implements FacebookListener
             }
         }
 
-
-
-
+//FACEBOOK SIG IN
 
         _fb_login.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,41 +85,30 @@ public class LoginActivity extends AppCompatActivity implements FacebookListener
 
                 mFacebook.performSignIn(LoginActivity.this);
 
-/*
-                callbackManager = CallbackManager.Factory.create();
-                LoginManager.getInstance().logInWithReadPermissions(LoginActivity.this, Arrays.asList(PERMISSION));
-                LoginManager.getInstance().registerCallback(callbackManager,
-                        new FacebookCallback<LoginResult>() {
-                            @Override
-                            public void onSuccess(LoginResult loginResult) {
-                                Log.d("Success", "Login");
-                                goMainScreen();
 
-                            }
-
-                            @Override
-                            public void onCancel() {
-                                Toast.makeText(LoginActivity.this, "Login Cancel", Toast.LENGTH_LONG).show();
-                            }
-
-                            @Override
-                            public void onError(FacebookException exception) {
-                                Toast.makeText(LoginActivity.this, exception.getMessage(), Toast.LENGTH_LONG).show();
-                            }
-                        });*/
             }
         });
+//GOOGLE SIG IN
+
+        _gog_login.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                mGoogle.performSignIn(LoginActivity.this);
+
+            }
+        });
+//EMAIL SIG IN
 
         _loginButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
                 login();
-      /*          Intent intent = new Intent(LoginActivity.this, Main2Activity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);*/
             }
         });
+
+        /*SIGN UP PROCESS*/
 
         _signupLink.setOnClickListener(new View.OnClickListener() {
 
@@ -131,20 +121,20 @@ public class LoginActivity extends AppCompatActivity implements FacebookListener
             }
         });
 
+        /*RESET PASSWORD PROCESS*/
+
         _resetpass.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
                 // Start the Signup activity
-                Intent intent = new Intent(getApplicationContext(), forgot_pass.class);
-                startActivity(intent);
+                forgot_pass.createInstance(LoginActivity.this,User);
                 overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
             }
         });
-
     }
 
-
+        /*Login process*/
 
     public void login() {
         Log.d(TAG, "Login");
@@ -172,8 +162,6 @@ public class LoginActivity extends AppCompatActivity implements FacebookListener
                 new Runnable() {
                     public void run() {
                         // On complete call either onLoginSuccess or onLoginFailed
-
-
                     //    onLoginSuccess();
                         // onLoginFailed();
 
@@ -189,24 +177,29 @@ public class LoginActivity extends AppCompatActivity implements FacebookListener
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         mFacebook.onActivityResult(requestCode, resultCode, data);
-
+        mGoogle.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == REQUEST_SIGNUP) {
             if (resultCode == RESULT_OK) {
 
                 // TODO: Implement successful signup logic here
                 // By default we just finish the Activity and log them in automatically
-
                 this.finish();
             }
         }
     }
 
-   /* @Override
+    @Override
     public void onBackPressed() {
         // Disable going back to the MainActivity
-        moveTaskToBack(true);
-    }*/
+        goMainScreen();
+    }
+
+    private void goMainScreen() {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+    }
 
     public void onLoginSuccess() {
         _loginButton.setEnabled(true);
@@ -219,6 +212,7 @@ public class LoginActivity extends AppCompatActivity implements FacebookListener
         Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG).show();
         _loginButton.setEnabled(true);
     }
+
 
     public boolean validate() {
         boolean valid = true;
@@ -239,16 +233,16 @@ public class LoginActivity extends AppCompatActivity implements FacebookListener
         } else {
             _passwordText.setError(null);
         }
-
         return valid;
     }
 
-
-    private void goMainScreen() {
-        Intent intent = new Intent(this, Main2Activity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
+        /*Authorization process*/
+    private void requestLogin(String username, String password){
+        UserController.getInstance().login(this,username,password,new LoginCallback());
     }
+
+
+
 
     public static void createInstance(Activity activity, int usuario) {
         Intent intent = getLaunchIntent(activity, usuario);
@@ -261,10 +255,7 @@ public class LoginActivity extends AppCompatActivity implements FacebookListener
         return intent;
     }
 
-    private void requestLogin(String username, String password){
 
-        UserController.getInstance().login(this,username,password,new LoginCallback());
-    }
 
     @Override
     public void onFbSignInFail(String s) {
@@ -273,13 +264,7 @@ public class LoginActivity extends AppCompatActivity implements FacebookListener
 
     @Override
     public void onFbSignInSuccess(String authToken, String userId) {
-        new AlertDialog.Builder(LoginActivity.this)
-                .setTitle("Resultado")
-                .setMessage("token:" + authToken + " \nId: " + userId)
-                .show();
-
         Main2Activity.createInstance(LoginActivity.this,1,"f",null);
-
 
     }
 
@@ -287,6 +272,26 @@ public class LoginActivity extends AppCompatActivity implements FacebookListener
     public void onFBSignOut() {
         Toast.makeText(getApplicationContext(),"Sing Out!!!!",Toast.LENGTH_SHORT).show();
     }
+
+
+    @Override
+    public void onGoogleAuthSignIn(String s, String s1) {
+        Main2Activity.createInstance(LoginActivity.this,1,"g",null);
+    }
+
+    @Override
+    public void onGoogleAuthSignInFailed(String s) {
+        Toast.makeText(getApplicationContext(),s,Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onGoogleAuthSignOut() {
+        Toast.makeText(getApplicationContext(),"Sing Out!!!!",Toast.LENGTH_SHORT).show();
+    }
+
+
+
+
 
     class LoginCallback implements LoginListener,UserInfoListener {
 
@@ -305,14 +310,14 @@ public class LoginActivity extends AppCompatActivity implements FacebookListener
             progressDialog.dismiss();
             new AlertDialog.Builder(LoginActivity.this)
                     .setTitle("Error")
-                    .setMessage(getString(R.string.username_and_password_do_not_match))
+                    .setMessage(message)
                     .setPositiveButton(R.string.Accept, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();
                         }
                     })
                     .show();
-//            Toast.makeText(getApplicationContext(),message,Toast.LENGTH_SHORT).show();
+
         }
 
         @Override
@@ -324,25 +329,22 @@ public class LoginActivity extends AppCompatActivity implements FacebookListener
 
         @Override
         public void onUserInfoCompleted(User user) {
-            progressDialog.dismiss();
             //logueo
-            new AlertDialog.Builder(LoginActivity.this)
-                    .setTitle("Resultado")
-                    .setMessage("Name:" + user.name + " \nLastname: " + user.lastname)
-                    .show();
+            mydb = new DB(LoginActivity.this);
+           if( mydb.insertUser(user.getId(),user.getToken(),user.getType(),user.getType_id(),user.getName(),user.getLastname(),user.getEmail(),user.getPicture())){
+               progressDialog.dismiss();
+               Main2Activity.createInstance(LoginActivity.this,1,"n",user);
+           }
 
-         Main2Activity.createInstance(LoginActivity.this,1,null,user);
 }
 
         @Override
         public void onUserInfoError(String message) {
             progressDialog.dismiss();
             Toast.makeText(getApplicationContext(),message,Toast.LENGTH_SHORT).show();
-
         }
     }
 
-    //</editor-fold>
 
 }
 
