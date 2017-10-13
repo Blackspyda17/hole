@@ -7,25 +7,25 @@ import java.io.Serializable;
  */
 
 public class User  implements Serializable {
-    public int id;
-    public String token;
-    public int type;
-    public int type_id;
-    public String name;
-    public String lastname;
-    public String email;
-    public String picture;
+    private int id;
+    private String name;
+    private String lastname;
+    private int country_id;
+    private String app_token;
+    private int type;
+    private String email;
+    private int doctor_id;
 
 
-    public User(int id, String token, int type,int type_id, String name, String lastname, String email, String picture) {
+    public User(int id, String name, String lastname, int country_id, String app_token, int type, String email,int doctor_id) {
         this.id = id;
-        this.token = token;
-        this.type = type;
-        this.type_id=type_id;
         this.name = name;
         this.lastname = lastname;
-        this.email = email;
-        this.picture = picture;
+        this.country_id = country_id;
+        this.app_token = app_token;
+        this.type = type;
+        this.email=email;
+        this.doctor_id=doctor_id;
     }
 
     public int getId() {
@@ -36,28 +36,6 @@ public class User  implements Serializable {
         this.id = id;
     }
 
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public int getType() {
-        return type;
-    }
-
-    public void setType(int type) {
-        this.type = type;
-    }
-    public int getType_id() {
-        return type_id;
-    }
-
-    public void setType_id(int type_id) {
-        this.type_id = type_id;
-    }
     public String getName() {
         return name;
     }
@@ -74,6 +52,31 @@ public class User  implements Serializable {
         this.lastname = lastname;
     }
 
+    public int getCountry_id() {
+        return country_id;
+    }
+
+    public void setCountry_id(int country_id) {
+        this.country_id = country_id;
+    }
+
+    public String getApp_token() {
+        return app_token;
+    }
+
+    public void setApp_token(String app_token) {
+        this.app_token = app_token;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
+
+
     public String getEmail() {
         return email;
     }
@@ -82,13 +85,12 @@ public class User  implements Serializable {
         this.email = email;
     }
 
-    public String getPicture() {
-        return picture;
+    public int getDoctor_id() {
+        return doctor_id;
     }
 
-    public void setPicture(String picture) {
-        this.picture = picture;
+    public void setDoctor_id(int doctor_id) {
+        this.doctor_id = doctor_id;
     }
-
 }
 

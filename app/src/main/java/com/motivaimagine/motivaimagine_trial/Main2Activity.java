@@ -42,8 +42,6 @@ import com.mukeshsolanki.sociallogin.google.GoogleHelper;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.Serializable;
-
 
 public class Main2Activity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -97,7 +95,8 @@ public class Main2Activity extends AppCompatActivity
 
     switch(x.getInt(USER_TYPE)){
         case 1:
-            initprof(x.getString(AUTH_TYPE), x.getSerializable(USUARIO));
+            usuario=(User) x.getSerializable(USUARIO);
+            initprof(x.getString(AUTH_TYPE), usuario);
             break;
         case 2:
             break;
@@ -239,16 +238,16 @@ public class Main2Activity extends AppCompatActivity
         return intent;
     }
 
-    private void initprof(String auth_type, Serializable user) {
+    private void initprof(final String auth_type, final User user) {
         AUTH=auth_type;
         switch (auth_type){
-            case "f":
+            case "F":
 
                 profileTracker = new ProfileTracker() {
                     @Override
                     protected void onCurrentProfileChanged(Profile oldProfile, Profile currentProfile) {
                         if (currentProfile != null) {
-                            displayProfileInfo('f',currentProfile);
+                            displayProfileInfo(AUTH,currentProfile,user);
                             profileTracker.startTracking();
                         }
                     }
@@ -262,14 +261,14 @@ public class Main2Activity extends AppCompatActivity
 
                     Profile profile = Profile.getCurrentProfile();
                     if (profile != null) {
-                        displayProfileInfo('f',profile);
+                        displayProfileInfo(AUTH,profile,user);
                     } else {
                         Profile.fetchProfileForCurrentAccessToken();
                     }
                 }
 
                 break;
-            case "g":
+            case "G":
 
                 GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                         .requestEmail()
@@ -280,11 +279,11 @@ public class Main2Activity extends AppCompatActivity
                         .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                         .build();
 
-                CheckApiG();
+                CheckApiG(user);
 
                 break;
             default:
-                displayProfileInfo('n',user);
+                displayProfileInfo(AUTH,null,user);
                 break;
 
         }
@@ -326,11 +325,11 @@ public class Main2Activity extends AppCompatActivity
 
     public void logout(String auth) {
         switch (auth){
-            case "f":
+            case "F":
                 LoginManager.getInstance().logOut();
                 goMainScreen();
                 break;
-            case "g":
+            case "G":
                 if(googleApiClient!=null) {
                     Auth.GoogleSignInApi.signOut(googleApiClient).setResultCallback(new ResultCallback<Status>() {
                         @Override
@@ -344,7 +343,7 @@ public class Main2Activity extends AppCompatActivity
                     });
                 }
                 break;
-            case "n":
+            case "E":
                 DB mydb=new DB(this.getApplicationContext());
                 mydb.deleteUser(mydb.getIDFUser());
                 goMainScreen();
@@ -356,26 +355,22 @@ public class Main2Activity extends AppCompatActivity
 
 
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-    }
 
 
-    public void CheckApiG(){
+
+    public void CheckApiG(User user){
         if(googleApiClient!=null) {
             OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(googleApiClient);
 
 
             if (opr.isDone()) {
                 GoogleSignInResult result = opr.get();
-                displayProfileInfo('g',result);
+                displayProfileInfo("G",result,user);
             } else {
                 opr.setResultCallback(new ResultCallback<GoogleSignInResult>() {
                     @Override
                     public void onResult(@NonNull GoogleSignInResult googleSignInResult) {
-                        displayProfileInfo('g',googleSignInResult);
+                        displayProfileInfo("G",googleSignInResult,usuario);
                     }
                 });
             }
@@ -387,6 +382,13 @@ public class Main2Activity extends AppCompatActivity
       if(profileTracker!=null){
           profileTracker.stopTracking();
       }
+
+if(googleApiClient!=null){
+    googleApiClient.stopAutoManage(Main2Activity.this);
+    googleApiClient.disconnect();
+}
+
+
     }
 
 
@@ -394,28 +396,27 @@ public class Main2Activity extends AppCompatActivity
 
 
 
-    private void displayProfileInfo(char opc, Object profile) {
+    private void displayProfileInfo(String opc, Object profile,User user) {
 
         switch (opc){
-            case 'f':
+            case "F":
                 Profile perfil=(Profile) profile;
-                NAME = perfil.getName();
+                NAME = user.getName()+" "+user.getLastname();
                 PHOTO=perfil.getProfilePictureUri(100, 100).toString();
-
                 _name.setText(NAME);
-
+                _email.setText(user.getEmail());
                 Glide.with(getApplicationContext())
                         .load(PHOTO)
                         .into(_profileImage);
                 break;
-            case 'g':
+            case "G":
                 GoogleSignInResult result=(GoogleSignInResult) profile;
                 if (result.isSuccess()) {
                     GoogleSignInAccount account = result.getSignInAccount();
-                    NAME =account.getDisplayName();
+                    NAME = user.getName()+" "+user.getLastname();
                     PHOTO= account.getPhotoUrl()+"";
                     _name.setText(NAME);
-                    _email.setText(account.getEmail());
+                    _email.setText(user.getEmail());
 
                     if(URLUtil.isValidUrl(PHOTO)) {
                         Glide.with(this).load(account.getPhotoUrl()).into(_profileImage);
@@ -426,14 +427,12 @@ public class Main2Activity extends AppCompatActivity
                     goMainScreen();
                 }
                 break;
-            case 'n':
-                User prof=(User) profile;
-                String email= prof.getEmail();
-                NAME = prof.getName()+" "+prof.getLastname();
-                PHOTO= prof.getPicture();
+            case "E":
 
-                _name.setText(""+NAME);
-                _email.setText(""+email);
+                NAME = user.getName()+" "+user.getLastname();
+                PHOTO= null;
+                _name.setText(NAME);
+                _email.setText(user.getEmail());
 
                 if(URLUtil.isValidUrl(PHOTO)) {
                     Glide.with(getApplicationContext())

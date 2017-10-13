@@ -50,7 +50,7 @@ dependencies {
     compile 'com.github.mukeshsolanki:social-login-helper:1.0.2'
     testCompile 'junit:junit:4.12'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
-    compile project(path: ':rest-client',configuration: 'mockDebug')
+    compile project(path: ':rest-client',configuration: 'prodDebug')
 
 }
 

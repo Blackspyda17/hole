@@ -20,13 +20,14 @@ public class DB extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "User.db";
     public static final String USER_TABLE_NAME = "user";
     public static final String USER_COLUMN_ID = "id";
-    public static final String USER_COLUMN_TOKEN = "token";
+    public static final String USER_COLUMN_TOKEN = "app_token";
     public static final String USER_COLUMN_TYPE = "type";
-    public static final String USER_COLUMN_TYPE_ID = "type_id";
     public static final String USER_COLUMN_NAME = "name";
     public static final String USER_COLUMN_LAST_NAME = "lastname";
+    public static final String USER_COLUMN_COUNTRY_ID = "country_id";
     public static final String USER_COLUMN_EMAIL = "email";
-    public static final String USER_COLUMN_PICTURE = "picture";
+    public static final String USER_COLUMN_STATUS = "status";
+    public static final String USER_COLUMN_DOCTOR_ID = "doctor_id";
 
     private HashMap hp;
 
@@ -39,7 +40,7 @@ public class DB extends SQLiteOpenHelper {
         // TODO Auto-generated method stub
         db.execSQL(
                 "create table user " +
-                        "(id integer primary key, token text, type integer, type_id integer ,name text, lastname text, email text, picture text)"
+                        "(id integer primary key, name text, lastname text, country_id integer, app_token text, type integer, email text, doctor_id integer)"
         );
     }
 
@@ -50,19 +51,24 @@ public class DB extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public boolean insertUser (int id,String token, int type , int type_id, String name, String lastname, String email, String picture) {
+    public boolean insertUser (int id, String name, String lastname, int country_id, String app_token, int type, String email,int doctor_id) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put("id", id);
-        contentValues.put("token", token);
-        contentValues.put("type", type);
-        contentValues.put("type_id", type_id);
         contentValues.put("name", name);
         contentValues.put("lastname", lastname);
+        contentValues.put("country_id", country_id);
+        contentValues.put("app_token", app_token);
+        contentValues.put("type", 1);
         contentValues.put("email", email);
-        contentValues.put("picture", picture);
-        db.insert("user", null, contentValues);
-        return true;
+        contentValues.put("doctor_id", 1);
+        try {
+            db.insert("user", null, contentValues);
+            return true;
+        }catch (Exception e){
+
+        }
+        return false;
     }
 
     public Cursor getData(int id) {
@@ -77,20 +83,21 @@ public class DB extends SQLiteOpenHelper {
         return numRows;
     }
 
-    public boolean updateUser (int id,String token, int type , int type_id, String name, String lastname, String email, String picture) {
+    public boolean updateUser (int id, String name, String lastname, int country_id, String app_token, int type, String email,int doctor_id) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put("id", id);
-        contentValues.put("token", token);
-        contentValues.put("type", type);
-        contentValues.put("type_id", type_id);
         contentValues.put("name", name);
         contentValues.put("lastname", lastname);
+        contentValues.put("country_id", country_id);
+        contentValues.put("app_token", app_token);
+        contentValues.put("type", type);
         contentValues.put("email", email);
-        contentValues.put("picture", picture);
+        contentValues.put("doctor_id", doctor_id);
         db.update("user", contentValues, "id = ? ", new String[] { Integer.toString(id) } );
         return true;
     }
+
 
     public Integer deleteUser (Integer id) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -113,9 +120,12 @@ public class DB extends SQLiteOpenHelper {
         //hp = new HashMap();
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor res =  db.rawQuery( "select * from user", null );
-        res.moveToFirst();
-        USER = new User(res.getInt(res.getColumnIndex(USER_COLUMN_ID)),res.getString(res.getColumnIndex(USER_COLUMN_TOKEN)),res.getInt(res.getColumnIndex(USER_COLUMN_TYPE)),res.getInt(res.getColumnIndex(USER_COLUMN_TYPE_ID))
-                ,res.getString(res.getColumnIndex(USER_COLUMN_NAME)),res.getString(res.getColumnIndex(USER_COLUMN_LAST_NAME)),res.getString(res.getColumnIndex(USER_COLUMN_NAME)),res.getString(res.getColumnIndex(USER_COLUMN_PICTURE)));
+        if(res!=null){
+            res.moveToFirst();
+            USER = new User(res.getInt(res.getColumnIndex(USER_COLUMN_ID)),res.getString(res.getColumnIndex(USER_COLUMN_NAME)),res.getString(res.getColumnIndex(USER_COLUMN_LAST_NAME)),res.getInt(res.getColumnIndex(USER_COLUMN_COUNTRY_ID)),res.getString(res.getColumnIndex(USER_COLUMN_TOKEN))
+                    ,res.getInt(res.getColumnIndex(USER_COLUMN_TYPE)),res.getString(res.getColumnIndex(USER_COLUMN_EMAIL)),res.getInt(res.getColumnIndex(USER_COLUMN_DOCTOR_ID)));
+        }
+
 /*        while(res.isAfterLast() == false){
             USER = new User(res.getInt(res.getColumnIndex(USER_COLUMN_ID)),res.getString(res.getColumnIndex(USER_COLUMN_TOKEN)),res.getInt(res.getColumnIndex(USER_COLUMN_TYPE)),res.getInt(res.getColumnIndex(USER_COLUMN_TYPE_ID))
                    ,res.getString(res.getColumnIndex(USER_COLUMN_NAME)),res.getString(res.getColumnIndex(USER_COLUMN_LAST_NAME)),res.getString(res.getColumnIndex(USER_COLUMN_NAME)),res.getString(res.getColumnIndex(USER_COLUMN_PICTURE)));

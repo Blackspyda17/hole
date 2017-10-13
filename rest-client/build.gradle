@@ -22,12 +22,9 @@ android {
     }
 
     productFlavors {
-        mock {
-            buildConfigField 'String', 'REST_URL', '"https://private-b2064f-token11.apiary-mock.com/"'
-        }
 
         prod {
-            buildConfigField 'String', 'REST_URL', '"http://dev.motivaimagine.com/"'
+            buildConfigField 'String', 'REST_URL', '"https://motivaimagine-us-trial.appspot.com/api/"'
         }
     }
 }

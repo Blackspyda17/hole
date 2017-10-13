@@ -19,7 +19,7 @@ import android.widget.Toast;
 import com.facebook.FacebookSdk;
 import com.motivaimagine.motivaimagine_trial.rest_client.user.UserController;
 import com.motivaimagine.motivaimagine_trial.rest_client.user.listeners.LoginListener;
-import com.motivaimagine.motivaimagine_trial.rest_client.user.listeners.UserInfoListener;
+import com.motivaimagine.motivaimagine_trial.rest_client.user.models.Error;
 import com.motivaimagine.motivaimagine_trial.rest_client.user.models.User;
 import com.mukeshsolanki.sociallogin.facebook.FacebookHelper;
 import com.mukeshsolanki.sociallogin.facebook.FacebookListener;
@@ -43,7 +43,7 @@ public class LoginActivity extends AppCompatActivity implements FacebookListener
     private FacebookHelper mFacebook;
     private GoogleHelper mGoogle;
     private DB mydb;
-
+    private String METHOD = "E";
     @BindView(R.id.or_layout) RelativeLayout _or;
     @BindView(R.id.input_email) EditText _emailText;
     @BindView(R.id.input_password) EditText _passwordText;
@@ -157,7 +157,7 @@ public class LoginActivity extends AppCompatActivity implements FacebookListener
         // TODO: Implement your own authentication logic here.
 
 
-        requestLogin(email,password);
+        requestLogin(email,password,"E",null,null);
         new android.os.Handler().postDelayed(
                 new Runnable() {
                     public void run() {
@@ -237,8 +237,8 @@ public class LoginActivity extends AppCompatActivity implements FacebookListener
     }
 
         /*Authorization process*/
-    private void requestLogin(String username, String password){
-        UserController.getInstance().login(this,username,password,new LoginCallback());
+    private void requestLogin(String username, String password,String method, String token,String apptoken ){
+        UserController.getInstance().login(this,username,password,method,token,apptoken,new LoginCallback());
     }
 
 
@@ -264,7 +264,7 @@ public class LoginActivity extends AppCompatActivity implements FacebookListener
 
     @Override
     public void onFbSignInSuccess(String authToken, String userId) {
-        Main2Activity.createInstance(LoginActivity.this,1,"f",null);
+        Main2Activity.createInstance(LoginActivity.this,1,"F",null);
 
     }
 
@@ -276,7 +276,7 @@ public class LoginActivity extends AppCompatActivity implements FacebookListener
 
     @Override
     public void onGoogleAuthSignIn(String s, String s1) {
-        Main2Activity.createInstance(LoginActivity.this,1,"g",null);
+        Main2Activity.createInstance(LoginActivity.this,1,"G",null);
     }
 
     @Override
@@ -293,7 +293,7 @@ public class LoginActivity extends AppCompatActivity implements FacebookListener
 
 
 
-    class LoginCallback implements LoginListener,UserInfoListener {
+    class LoginCallback implements LoginListener {
 
         @Override
         public void onLoginStart() {
@@ -301,16 +301,20 @@ public class LoginActivity extends AppCompatActivity implements FacebookListener
         }
 
         @Override
-        public void onLoginCompleted(int userId, String token) {
-          UserController.getInstance().getUserInfo(LoginActivity.this,userId,token,this);
+        public void onLoginCompleted(User user) {
+            mydb = new DB(LoginActivity.this);
+            if( mydb.insertUser(user.getId(),user.getName(),user.getLastname(),user.getCountry_id(),user.getApp_token(),user.getType(),user.getEmail(),user.getDoctor_id())){
+                progressDialog.dismiss();
+                Main2Activity.createInstance(LoginActivity.this,1,"E",user);
+            }
         }
 
         @Override
-        public void onLoginError(String message) {
+        public void onLoginError(Error message) {
             progressDialog.dismiss();
             new AlertDialog.Builder(LoginActivity.this)
                     .setTitle("Error")
-                    .setMessage(message)
+                    .setMessage(message.getCode())
                     .setPositiveButton(R.string.Accept, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();
@@ -320,7 +324,7 @@ public class LoginActivity extends AppCompatActivity implements FacebookListener
 
         }
 
-        @Override
+/*        @Override
         public void onUserInfoStart() {
             //Nothing
         }
@@ -331,7 +335,7 @@ public class LoginActivity extends AppCompatActivity implements FacebookListener
         public void onUserInfoCompleted(User user) {
             //logueo
             mydb = new DB(LoginActivity.this);
-           if( mydb.insertUser(user.getId(),user.getToken(),user.getType(),user.getType_id(),user.getName(),user.getLastname(),user.getEmail(),user.getPicture())){
+           if( mydb.insertUser(user.getId(),user.getName(),user.getLastname(),user.getEmail(),user.getType(),user.getType_id(),user.getMethod(),user.getToken(),user.getApptoken(),user.getPicture(),user.getDoctor_id())){
                progressDialog.dismiss();
                Main2Activity.createInstance(LoginActivity.this,1,"n",user);
            }
@@ -342,8 +346,9 @@ public class LoginActivity extends AppCompatActivity implements FacebookListener
         public void onUserInfoError(String message) {
             progressDialog.dismiss();
             Toast.makeText(getApplicationContext(),message,Toast.LENGTH_SHORT).show();
-        }
+        }*/
     }
+
 
 
 }

@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name" translatable="false">Rest-client</string>
-    <string name="uri_login" translatable="false">user?username=%1$s&amp;password=%2$s</string>
-    <string name="uri_register" translatable="false">user?Email=%1$s&amp;First_Name=%2$s&amp;Last_Name=%3$s&amp;Method=%4$s&amp;Platform=%5$s&amp;country_id=%6$s&amp;pass=%7$s&amp;token=%8$s</string>
+    <string name="uri_login" translatable="false">login</string>
+    <string name="uri_register" translatable="false">user/create</string>
     <string name="uri_user_info" translatable="false">user?id=%1$s&amp;token=%2$s</string>
     <!--    <string name="uri_login">login.php?username=%1$s&amp;password=%2$s</string>
         <string name="uri_user_info">profile.php?id=%1$s&amp;token=%2$s</string>-->

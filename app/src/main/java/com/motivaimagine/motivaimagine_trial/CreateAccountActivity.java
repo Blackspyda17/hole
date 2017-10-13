@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.ScrollingMovementMethod;
@@ -20,8 +21,23 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.OptionalPendingResult;
+import com.google.android.gms.common.api.ResultCallback;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.motivaimagine.motivaimagine_trial.rest_client.user.UserController;
+import com.motivaimagine.motivaimagine_trial.rest_client.user.listeners.LoginListener;
+import com.motivaimagine.motivaimagine_trial.rest_client.user.models.Error;
+import com.motivaimagine.motivaimagine_trial.rest_client.user.models.User;
+import com.mukeshsolanki.sociallogin.facebook.FacebookHelper;
+import com.mukeshsolanki.sociallogin.facebook.FacebookListener;
+import com.mukeshsolanki.sociallogin.google.GoogleHelper;
+import com.mukeshsolanki.sociallogin.google.GoogleListener;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -33,9 +49,17 @@ import butterknife.ButterKnife;
 /**
  * A login screen that offers login via email/password.
  */
-public class CreateAccountActivity extends AppCompatActivity {
+public class CreateAccountActivity extends AppCompatActivity implements FacebookListener,GoogleListener {
     private int User;
-    public String TERMS="Terms and Conditions\n" +
+    public ProgressDialog progressDialog;
+    private String METHOD = "E";
+    private String TOKEN=null;
+    public DB mydb;
+    private FacebookHelper mFacebook;
+    private GoogleHelper mGoogle;
+    boolean resultado=false;
+    private GoogleApiClient googleApiClient;
+    public String TERMS = "Terms and Conditions\n" +
             "Introduction\n" +
             "\n" +
             "Welcome to www.motivaomplants.com (the “Site”). Establishment Labs Holdings Inc (referred to as “Establishment Labs”, “we”, “us” or “our”, as applicable) provides you with access to the Site subject to the terms and conditions contained in this Terms of Use Agreement (the “Agreement’). Please read this Agreement carefully. By accessing or using this Site, you agree without restriction to be bound by this Agreement. If you do not agree to follow and be bound by this Agreement, you may not access, use or download materials from this Site.\n" +
@@ -114,20 +138,32 @@ public class CreateAccountActivity extends AppCompatActivity {
 
     private static final String TAG = "SignupActivity";
     private static final String OPCION = "Opc";
-    @BindView(R.id.chk_terms) CheckBox _terms;
-    @BindView(R.id.sp_country) Spinner _country;
-    @BindView(R.id.input_name) EditText _nameText;
-    @BindView(R.id.input_lname) EditText _lnameText;
-    @BindView(R.id.input_email) EditText _emailText;
-    @BindView(R.id.input_password) EditText _passwordText;
-    @BindView(R.id.input_reEnterPassword) EditText _reEnterPasswordText;
-    @BindView(R.id.btn_signup) Button _signupButton;
-    @BindView(R.id.btn_terms) Button _btn_terms;
-    @BindView(R.id.btn_privacy) Button _btn_privacy;
-    @BindView(R.id.btn_fb_login) Button _fb_login;
-    @BindView(R.id.btn_google) Button _gog_login;
-    @BindView(R.id.link_login) TextView _loginLink;
-
+    @BindView(R.id.chk_terms)
+    CheckBox _terms;
+    @BindView(R.id.sp_country)
+    Spinner _country;
+    @BindView(R.id.input_name)
+    EditText _nameText;
+    @BindView(R.id.input_lname)
+    EditText _lnameText;
+    @BindView(R.id.input_email)
+    EditText _emailText;
+    @BindView(R.id.input_password)
+    EditText _passwordText;
+    @BindView(R.id.input_reEnterPassword)
+    EditText _reEnterPasswordText;
+    @BindView(R.id.btn_signup)
+    Button _signupButton;
+    @BindView(R.id.btn_terms)
+    Button _btn_terms;
+    @BindView(R.id.btn_privacy)
+    Button _btn_privacy;
+    @BindView(R.id.btn_fb_login)
+    Button _fb_login;
+    @BindView(R.id.btn_google)
+    Button _gog_login;
+    @BindView(R.id.link_login)
+    TextView _loginLink;
 
 
     @Override
@@ -137,7 +173,25 @@ public class CreateAccountActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         Bundle x = this.getIntent().getExtras();
         if (x != null) {
-            User= x.getInt(OPCION);
+            User = x.getInt(OPCION);
+        }
+        mFacebook=new FacebookHelper(CreateAccountActivity.this);
+        mGoogle = new GoogleHelper(this,CreateAccountActivity.this , null);
+
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+        if(googleApiClient == null || !googleApiClient.isConnected()) {
+            try {
+                googleApiClient = new GoogleApiClient.Builder(CreateAccountActivity.this)
+                        .enableAutoManage(CreateAccountActivity.this /* FragmentActivity */, mGoogle /* OnConnectionFailedListener */)
+                        .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                        .build();
+                googleApiClient.connect();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         _signupButton.setOnClickListener(new View.OnClickListener() {
@@ -147,11 +201,22 @@ public class CreateAccountActivity extends AppCompatActivity {
             }
         });
 
+        //GOOGLE SIGN UP
+
+        _gog_login.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                mGoogle.performSignIn(CreateAccountActivity.this);
+
+            }
+        });
+
         _loginLink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Finish the registration screen and return to the Login activity
-                Intent intent = new Intent(getApplicationContext(),LoginActivity.class);
+                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                 startActivity(intent);
                 finish();
                 overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
@@ -162,7 +227,7 @@ public class CreateAccountActivity extends AppCompatActivity {
         _btn_privacy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialogo(CreateAccountActivity.this, getString(R.string.privacy_policy),"Privacy Policy\n" +
+                dialogo(CreateAccountActivity.this, getString(R.string.privacy_policy), "Privacy Policy\n" +
                         "This privacy policy sets out how Establishment Labs S.A. uses and protects any information that you give Establishment Labs S.A. when you use this website. All personal data is stored in a secure data base.\n" +
                         "\n" +
                         "Establishment Labs S.A. is committed to ensuring that your privacy is protected. Should we ask you to provide certain information by which you can be identified when using this website, then you can be assured that it will only be used in accordance with this privacy statement.\n" +
@@ -229,7 +294,7 @@ public class CreateAccountActivity extends AppCompatActivity {
         _btn_terms.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialogo(CreateAccountActivity.this, getString(R.string.terms_and_conditions),TERMS);
+                dialogo(CreateAccountActivity.this, getString(R.string.terms_and_conditions), TERMS);
             }
         });
 
@@ -239,17 +304,15 @@ public class CreateAccountActivity extends AppCompatActivity {
         types.add(getString(R.string.Doctor));
 
 
-
-
-        Type listType = new TypeToken<ArrayList<Country>>(){}.getType();
+        Type listType = new TypeToken<ArrayList<Country>>() {
+        }.getType();
         Gson gson = new Gson();
-        String COUNTRIES="[{\"id\":29,\"name\":\"Germany\"},{\"id\":42,\"name\":\"Sweden\"},{\"id\":154,\"name\":\"Canada\"},{\"id\":174,\"name\":\"United States\"}]";
+        String COUNTRIES = "[{\"id\":29,\"name\":\"Germany\"},{\"id\":42,\"name\":\"Sweden\"},{\"id\":154,\"name\":\"Canada\"},{\"id\":174,\"name\":\"United States\"}]";
         List<Country> paises = gson.fromJson(COUNTRIES, listType);
         List<String> countries = new ArrayList<String>();
         for (int i = 0; i < paises.size(); i++) {
             countries.add(paises.get(i).getName());
         }
-
 
 
         // Creating adapter for spinner
@@ -274,21 +337,22 @@ public class CreateAccountActivity extends AppCompatActivity {
 
         _signupButton.setEnabled(false);
 
-        final ProgressDialog progressDialog = new ProgressDialog(CreateAccountActivity.this,
+        progressDialog = new ProgressDialog(CreateAccountActivity.this,
                 R.style.AppThemeMain2_Dark_Dialog);
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Creating Account...");
-        progressDialog.show();
 
         String name = _nameText.getText().toString();
-        String address = _lnameText.getText().toString();
+        String lastname = _lnameText.getText().toString();
         String email = _emailText.getText().toString();
         String password = _passwordText.getText().toString();
         String reEnterPassword = _reEnterPasswordText.getText().toString();
 
         // TODO: Implement your own signup logic here.
 
-        new android.os.Handler().postDelayed(
+        requestSignUp(email, name, lastname, METHOD, "A", 174, password, TOKEN);
+
+      /*  new android.os.Handler().postDelayed(
                 new Runnable() {
                     public void run() {
                         // On complete call either onSignupSuccess or onSignupFailed
@@ -297,10 +361,14 @@ public class CreateAccountActivity extends AppCompatActivity {
                         // onSignupFailed();
                         progressDialog.dismiss();
                     }
-                }, 3000);
+                }, 3000);*/
     }
 
-    public void dialogo (Context context,String titulo,String mensaje){
+    private void requestSignUp(String email, String name, String lastname, String method, String platform, int country_id, String password, String token) {
+        UserController.getInstance().Register(this, name, lastname, email, method, platform, country_id, password, token, new CreateAccountActivity.RegisterCallback());
+    }
+
+    public void dialogo(Context context, String titulo, String mensaje) {
 
         AlertDialog dialog = new AlertDialog.Builder(context)
 
@@ -390,8 +458,6 @@ public class CreateAccountActivity extends AppCompatActivity {
     }
 
 
-
-
     public static void createInstance(Activity activity, int usuario) {
         Intent intent = getLaunchIntent(activity, usuario);
         activity.startActivity(intent);
@@ -399,8 +465,171 @@ public class CreateAccountActivity extends AppCompatActivity {
 
     public static Intent getLaunchIntent(Context context, int usuario) {
         Intent intent = new Intent(context, CreateAccountActivity.class);
-        intent.putExtra(OPCION,usuario);
+        intent.putExtra(OPCION, usuario);
         return intent;
     }
+
+    @Override
+    public void onFbSignInFail(String s) {
+
+    }
+
+    @Override
+    public void onFbSignInSuccess(String s, String s1) {
+
+    }
+
+    @Override
+    public void onFBSignOut() {
+
+    }
+
+    @Override
+    public void onGoogleAuthSignIn(String s, String s1) {
+        METHOD = "G";
+        google_signup(s);
+
+    }
+
+    @Override
+    public void onGoogleAuthSignInFailed(String s) {
+
+    }
+
+    @Override
+    public void onGoogleAuthSignOut() {
+
+    }
+
+
+    class RegisterCallback implements LoginListener {
+
+        @Override
+        public void onLoginStart() {
+            progressDialog.show();
+        }
+
+        @Override
+        public void onLoginCompleted(User user) {
+            mydb = new DB(CreateAccountActivity.this);
+            if (mydb.insertUser(user.getId(), user.getName(), user.getLastname(), user.getCountry_id(), user.getApp_token(), user.getType(), user.getEmail(), user.getDoctor_id())) {
+                progressDialog.dismiss();
+                Main2Activity.createInstance(CreateAccountActivity.this, 1, METHOD, user);
+            }
+        }
+
+        @Override
+        public void onLoginError(Error message) {
+            progressDialog.dismiss();
+            new AlertDialog.Builder(CreateAccountActivity.this)
+                    .setTitle("Error")
+                    .setMessage(message.getCode())
+                    .setPositiveButton(R.string.Accept, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    })
+                    .show();
+
+        }
+
+/*        @Override
+        public void onUserInfoStart() {
+            //Nothing
+        }
+
+
+
+        @Override
+        public void onUserInfoCompleted(User user) {
+            //logueo
+            mydb = new DB(LoginActivity.this);
+           if( mydb.insertUser(user.getId(),user.getName(),user.getLastname(),user.getEmail(),user.getType(),user.getType_id(),user.getMethod(),user.getToken(),user.getApptoken(),user.getPicture(),user.getDoctor_id())){
+               progressDialog.dismiss();
+               Main2Activity.createInstance(LoginActivity.this,1,"n",user);
+           }
+
+}
+
+        @Override
+        public void onUserInfoError(String message) {
+            progressDialog.dismiss();
+            Toast.makeText(getApplicationContext(),message,Toast.LENGTH_SHORT).show();
+        }*/
+    }
+
+    public void google_parameters_signup(GoogleSignInResult signInResult) {
+
+
+        if (signInResult.isSuccess()) {
+            GoogleSignInAccount account = signInResult.getSignInAccount();
+            _nameText.setText(account.getGivenName());
+            _lnameText.setText(account.getFamilyName());
+            _emailText.setText(account.getEmail());
+            _passwordText.setVisibility(View.GONE);
+            _reEnterPasswordText.setVisibility(View.GONE);
+            _signupButton.setEnabled(true);
+             signup();
+        }
+    }
+
+
+    public void google_signup(String token) {
+        TOKEN=token;
+
+
+
+
+
+
+
+
+            OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(googleApiClient);
+
+            if (opr.isDone()) {
+                GoogleSignInResult result = opr.get();
+                google_parameters_signup(result);
+            } else {
+                opr.setResultCallback(new ResultCallback<GoogleSignInResult>() {
+                    @Override
+                    public void onResult(@NonNull GoogleSignInResult googleSignInResult) {
+                        google_parameters_signup(googleSignInResult);
+                    }
+                });
+
+            }
+
+
+        }
+
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        mFacebook.onActivityResult(requestCode, resultCode, data);
+        mGoogle.onActivityResult(requestCode, resultCode, data);
+/*
+        if (requestCode == REQUEST_SIGNUP) {
+            if (resultCode == RESULT_OK) {
+
+                // TODO: Implement successful signup logic here
+                // By default we just finish the Activity and log them in automatically
+                this.finish();
+            }
+        }*/
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if(googleApiClient!=null){
+            googleApiClient.stopAutoManage(CreateAccountActivity.this);
+            googleApiClient.disconnect();
+        }
+
+    }
+
 }
 
