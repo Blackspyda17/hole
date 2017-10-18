@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.ScrollingMovementMethod;
@@ -21,27 +20,32 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.AccessToken;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
 import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.OptionalPendingResult;
-import com.google.android.gms.common.api.ResultCallback;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.motivaimagine.motivaimagine_trial.facebook.FacebookHelper;
+import com.motivaimagine.motivaimagine_trial.facebook.FacebookListener;
+import com.motivaimagine.motivaimagine_trial.google.GoogleHelper;
+import com.motivaimagine.motivaimagine_trial.google.GoogleListener;
 import com.motivaimagine.motivaimagine_trial.rest_client.user.UserController;
 import com.motivaimagine.motivaimagine_trial.rest_client.user.listeners.LoginListener;
 import com.motivaimagine.motivaimagine_trial.rest_client.user.models.Error;
 import com.motivaimagine.motivaimagine_trial.rest_client.user.models.User;
-import com.mukeshsolanki.sociallogin.facebook.FacebookHelper;
-import com.mukeshsolanki.sociallogin.facebook.FacebookListener;
-import com.mukeshsolanki.sociallogin.google.GoogleHelper;
-import com.mukeshsolanki.sociallogin.google.GoogleListener;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -50,14 +54,17 @@ import butterknife.ButterKnife;
  * A login screen that offers login via email/password.
  */
 public class CreateAccountActivity extends AppCompatActivity implements FacebookListener,GoogleListener {
+
     private int User;
     public ProgressDialog progressDialog;
     private String METHOD = "E";
     private String TOKEN=null;
+    private String PHOTO=null;
     public DB mydb;
-    private FacebookHelper mFacebook;
-    private GoogleHelper mGoogle;
+    public  FacebookHelper mFacebook;
+    public  GoogleHelper mGoogle;
     boolean resultado=false;
+    List<Country> paises;
     private GoogleApiClient googleApiClient;
     public String TERMS = "Terms and Conditions\n" +
             "Introduction\n" +
@@ -176,23 +183,8 @@ public class CreateAccountActivity extends AppCompatActivity implements Facebook
             User = x.getInt(OPCION);
         }
         mFacebook=new FacebookHelper(CreateAccountActivity.this);
-        mGoogle = new GoogleHelper(this,CreateAccountActivity.this , null);
+        mGoogle=new GoogleHelper(this,this,null);
 
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
-                .build();
-        if(googleApiClient == null || !googleApiClient.isConnected()) {
-            try {
-                googleApiClient = new GoogleApiClient.Builder(CreateAccountActivity.this)
-                        .enableAutoManage(CreateAccountActivity.this /* FragmentActivity */, mGoogle /* OnConnectionFailedListener */)
-                        .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                        .build();
-                googleApiClient.connect();
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
 
         _signupButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -207,7 +199,20 @@ public class CreateAccountActivity extends AppCompatActivity implements Facebook
             @Override
             public void onClick(View view) {
 
-                mGoogle.performSignIn(CreateAccountActivity.this);
+                METHOD="G";
+            mGoogle.performSignIn(CreateAccountActivity.this);
+
+            }
+        });
+
+//FACEBOOK SIGn UP
+
+        _fb_login.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                mFacebook.performSignIn(CreateAccountActivity.this);
+
 
             }
         });
@@ -308,11 +313,13 @@ public class CreateAccountActivity extends AppCompatActivity implements Facebook
         }.getType();
         Gson gson = new Gson();
         String COUNTRIES = "[{\"id\":29,\"name\":\"Germany\"},{\"id\":42,\"name\":\"Sweden\"},{\"id\":154,\"name\":\"Canada\"},{\"id\":174,\"name\":\"United States\"}]";
-        List<Country> paises = gson.fromJson(COUNTRIES, listType);
+        paises = gson.fromJson(COUNTRIES, listType);
+
         List<String> countries = new ArrayList<String>();
         for (int i = 0; i < paises.size(); i++) {
             countries.add(paises.get(i).getName());
         }
+
 
 
         // Creating adapter for spinner
@@ -328,6 +335,7 @@ public class CreateAccountActivity extends AppCompatActivity implements Facebook
 
     public void signup() {
 
+        System.out.println("estee es eeeel paiiiiisss-----------"+paises.get(_country.getSelectedItemPosition()).getId());
         Log.d(TAG, "Signup");
 
         if (!validate()) {
@@ -348,9 +356,16 @@ public class CreateAccountActivity extends AppCompatActivity implements Facebook
         String password = _passwordText.getText().toString();
         String reEnterPassword = _reEnterPasswordText.getText().toString();
 
-        // TODO: Implement your own signup logic here.
 
-        requestSignUp(email, name, lastname, METHOD, "A", 174, password, TOKEN);
+
+        // TODO: Implement your own signup logic here.
+        if(_terms.isChecked()){
+            requestSignUp(email, name, lastname, METHOD, "A", paises.get(_country.getSelectedItemPosition()).getId(), password, TOKEN);
+        }else {
+            dialogo(CreateAccountActivity.this,"TERMS AND PRIVACY POLICY","You must accept the terms and conditions and privacy policy before");
+        }
+
+
 
       /*  new android.os.Handler().postDelayed(
                 new Runnable() {
@@ -377,13 +392,7 @@ public class CreateAccountActivity extends AppCompatActivity implements Facebook
                 .setPositiveButton(R.string.Accept, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
-                    }
-                })
-                .setNegativeButton(R.string.Dissmiss, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        _terms.setChecked(false);
-                        dialog.dismiss();
-                        // User cancelled the dialog
+                        _signupButton.setEnabled(true);
                     }
                 })
                 .setIcon(android.R.drawable.ic_dialog_info)
@@ -404,7 +413,6 @@ public class CreateAccountActivity extends AppCompatActivity implements Facebook
 
     public void onSignupFailed() {
         Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG).show();
-
         _signupButton.setEnabled(true);
     }
 
@@ -439,19 +447,21 @@ public class CreateAccountActivity extends AppCompatActivity implements Facebook
             _emailText.setError(null);
         }
 
+        if(METHOD.equalsIgnoreCase("E")){
 
-        if (password.isEmpty() || password.length() < 4 || password.length() > 10) {
-            _passwordText.setError("between 4 and 10 alphanumeric characters");
-            valid = false;
-        } else {
-            _passwordText.setError(null);
-        }
+            if (password.isEmpty() || password.length() < 4 || password.length() > 10) {
+                _passwordText.setError("between 4 and 10 alphanumeric characters");
+                valid = false;
+            } else {
+                _passwordText.setError(null);
+            }
 
-        if (reEnterPassword.isEmpty() || reEnterPassword.length() < 4 || reEnterPassword.length() > 10 || !(reEnterPassword.equals(password))) {
-            _reEnterPasswordText.setError("Password Do not match");
-            valid = false;
-        } else {
-            _reEnterPasswordText.setError(null);
+            if (reEnterPassword.isEmpty() || reEnterPassword.length() < 4 || reEnterPassword.length() > 10 || !(reEnterPassword.equals(password))) {
+                _reEnterPasswordText.setError("Password Do not match");
+                valid = false;
+            } else {
+                _reEnterPasswordText.setError(null);
+            }
         }
 
         return valid;
@@ -469,35 +479,55 @@ public class CreateAccountActivity extends AppCompatActivity implements Facebook
         return intent;
     }
 
-    @Override
-    public void onFbSignInFail(String s) {
 
-    }
 
-    @Override
-    public void onFbSignInSuccess(String s, String s1) {
-
-    }
-
-    @Override
-    public void onFBSignOut() {
-
-    }
-
-    @Override
+ /*   @Override
     public void onGoogleAuthSignIn(String s, String s1) {
         METHOD = "G";
         google_signup(s);
+        this.
+
 
     }
 
+
+*/
+
     @Override
-    public void onGoogleAuthSignInFailed(String s) {
+    public void onGoogleAuthSignIn(String authToken, String userId,String email, String lastname, String name, String url) {
+        parameters_signup(name,lastname);
+        _emailText.setText(email);
+        TOKEN=userId;
+        PHOTO=url;
+    }
+
+    @Override
+    public void onGoogleAuthSignInFailed(String errorMessage) {
 
     }
 
     @Override
     public void onGoogleAuthSignOut() {
+
+    }
+
+    @Override
+    public void onFbSignInFail(String errorMessage) {
+
+    }
+
+    @Override
+    public void onFbSignInSuccess(String authToken, String userId, String name, String Lastname, String picture) throws ExecutionException, InterruptedException {
+        TOKEN=userId;
+        PHOTO=picture;
+        METHOD="F";
+        requestEmail(AccessToken.getCurrentAccessToken());
+        parameters_signup(name,Lastname);
+
+    }
+
+    @Override
+    public void onFBSignOut() {
 
     }
 
@@ -512,9 +542,9 @@ public class CreateAccountActivity extends AppCompatActivity implements Facebook
         @Override
         public void onLoginCompleted(User user) {
             mydb = new DB(CreateAccountActivity.this);
-            if (mydb.insertUser(user.getId(), user.getName(), user.getLastname(), user.getCountry_id(), user.getApp_token(), user.getType(), user.getEmail(), user.getDoctor_id())) {
+            if (mydb.insertUser(user.getId(), user.getName(), user.getLastname(), user.getCountry_id(), user.getApp_token(), user.getType(), user.getEmail(), user.getDoctor_id(),METHOD,PHOTO)) {
                 progressDialog.dismiss();
-                Main2Activity.createInstance(CreateAccountActivity.this, 1, METHOD, user);
+                Main2Activity.createInstance(CreateAccountActivity.this,user.getType(),user);
             }
         }
 
@@ -558,20 +588,19 @@ public class CreateAccountActivity extends AppCompatActivity implements Facebook
         }*/
     }
 
-    public void google_parameters_signup(GoogleSignInResult signInResult) {
+    public void parameters_signup(String name, String lastname) {
 
-
-        if (signInResult.isSuccess()) {
-            GoogleSignInAccount account = signInResult.getSignInAccount();
-            _nameText.setText(account.getGivenName());
-            _lnameText.setText(account.getFamilyName());
-            _emailText.setText(account.getEmail());
+            _nameText.setText(name);
+            _lnameText.setText(lastname);
             _passwordText.setVisibility(View.GONE);
             _reEnterPasswordText.setVisibility(View.GONE);
-            _signupButton.setEnabled(true);
-             signup();
+
+       // _signupButton.setEnabled(true);
+
+
+/*             signup();*/
         }
-    }
+
 
 
     public void google_signup(String token) {
@@ -579,25 +608,19 @@ public class CreateAccountActivity extends AppCompatActivity implements Facebook
 
 
 
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
 
-
-
+        googleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this, mGoogle)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
 
 
             OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(googleApiClient);
 
-            if (opr.isDone()) {
-                GoogleSignInResult result = opr.get();
-                google_parameters_signup(result);
-            } else {
-                opr.setResultCallback(new ResultCallback<GoogleSignInResult>() {
-                    @Override
-                    public void onResult(@NonNull GoogleSignInResult googleSignInResult) {
-                        google_parameters_signup(googleSignInResult);
-                    }
-                });
 
-            }
 
 
         }
@@ -624,12 +647,37 @@ public class CreateAccountActivity extends AppCompatActivity implements Facebook
     public void onDestroy() {
         super.onDestroy();
 
-        if(googleApiClient!=null){
-            googleApiClient.stopAutoManage(CreateAccountActivity.this);
-            googleApiClient.disconnect();
-        }
 
     }
+
+    private void requestEmail(AccessToken currentAccessToken) {
+        GraphRequest request = GraphRequest.newMeRequest(currentAccessToken, new GraphRequest.GraphJSONObjectCallback() {
+            @Override
+            public void onCompleted(JSONObject object, GraphResponse response) {
+                if (response.getError() != null) {
+                    Toast.makeText(getApplicationContext(), response.getError().getErrorMessage(), Toast.LENGTH_LONG).show();
+                    return;
+                }
+                try {
+                    String email = object.getString("email");
+                    setEmail(email);
+                } catch (JSONException e) {
+                    Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+        Bundle parameters = new Bundle();
+        parameters.putString("fields", "id, first_name, last_name, email, gender, birthday, location");
+        request.setParameters(parameters);
+        request.executeAsync();
+    }
+
+
+    private void setEmail(String email) {
+        _emailText.setText(email);
+    }
+
+
 
 }
 

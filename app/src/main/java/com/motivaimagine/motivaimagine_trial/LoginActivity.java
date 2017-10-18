@@ -16,15 +16,20 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.facebook.FacebookSdk;
+import com.facebook.AccessToken;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.motivaimagine.motivaimagine_trial.facebook.FacebookHelper;
+import com.motivaimagine.motivaimagine_trial.facebook.FacebookListener;
+import com.motivaimagine.motivaimagine_trial.google.GoogleHelper;
+import com.motivaimagine.motivaimagine_trial.google.GoogleListener;
 import com.motivaimagine.motivaimagine_trial.rest_client.user.UserController;
 import com.motivaimagine.motivaimagine_trial.rest_client.user.listeners.LoginListener;
 import com.motivaimagine.motivaimagine_trial.rest_client.user.models.Error;
 import com.motivaimagine.motivaimagine_trial.rest_client.user.models.User;
-import com.mukeshsolanki.sociallogin.facebook.FacebookHelper;
-import com.mukeshsolanki.sociallogin.facebook.FacebookListener;
-import com.mukeshsolanki.sociallogin.google.GoogleHelper;
-import com.mukeshsolanki.sociallogin.google.GoogleListener;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -40,8 +45,11 @@ public class LoginActivity extends AppCompatActivity implements FacebookListener
     private int User;
     private static final String TAG = "LoginActivity";
     private static final int REQUEST_SIGNUP = 0;
-    private FacebookHelper mFacebook;
-    private GoogleHelper mGoogle;
+    private String TOKEN=null;
+    private String PHOTO=null;
+    public FacebookHelper mFacebook;
+    public GoogleHelper mGoogle;
+    private String FB_EMAIL;
     private DB mydb;
     private String METHOD = "E";
     @BindView(R.id.or_layout) RelativeLayout _or;
@@ -60,10 +68,9 @@ public class LoginActivity extends AppCompatActivity implements FacebookListener
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
-        FacebookSdk.setApplicationId(getResources().getString(R.string.app_id));
-        FacebookSdk.sdkInitialize(this);
         mFacebook=new FacebookHelper(LoginActivity.this);
         mGoogle = new GoogleHelper(this, this, null);
+
         Bundle x = this.getIntent().getExtras();
         if (x != null) {
            User= x.getInt(OPCION);
@@ -77,6 +84,11 @@ public class LoginActivity extends AppCompatActivity implements FacebookListener
             }
         }
 
+        progressDialog=new ProgressDialog(LoginActivity.this,
+                R.style.AppThemeMain2_Dark_Dialog);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setMessage("Authenticating...");
+
 //FACEBOOK SIG IN
 
         _fb_login.setOnClickListener(new View.OnClickListener() {
@@ -84,7 +96,8 @@ public class LoginActivity extends AppCompatActivity implements FacebookListener
             public void onClick(View view) {
 
                 mFacebook.performSignIn(LoginActivity.this);
-
+                requestEmail(AccessToken.getCurrentAccessToken());
+                //requestEmail(AccessToken.getCurrentAccessToken());
 
             }
         });
@@ -145,10 +158,7 @@ public class LoginActivity extends AppCompatActivity implements FacebookListener
         }
       //  _loginButton.setEnabled(false);
 
-        progressDialog=new ProgressDialog(LoginActivity.this,
-        R.style.AppThemeMain2_Dark_Dialog);
-        progressDialog.setIndeterminate(true);
-        progressDialog.setMessage("Authenticating...");
+
 
 
         String email = _emailText.getText().toString();
@@ -238,7 +248,9 @@ public class LoginActivity extends AppCompatActivity implements FacebookListener
 
         /*Authorization process*/
     private void requestLogin(String username, String password,String method, String token,String apptoken ){
-        UserController.getInstance().login(this,username,password,method,token,apptoken,new LoginCallback());
+
+    UserController.getInstance().login(this,username,password,method,token,apptoken,new LoginCallback());
+
     }
 
 
@@ -263,10 +275,13 @@ public class LoginActivity extends AppCompatActivity implements FacebookListener
     }
 
     @Override
-    public void onFbSignInSuccess(String authToken, String userId) {
-        Main2Activity.createInstance(LoginActivity.this,1,"F",null);
-
+    public void onFbSignInSuccess(String authToken, String userId, String name, String Lastname, String picture) {
+        TOKEN=userId;
+        PHOTO=picture;
+        METHOD="F";
+        requestLogin(FB_EMAIL,null, METHOD, TOKEN,null);
     }
+
 
     @Override
     public void onFBSignOut() {
@@ -274,9 +289,15 @@ public class LoginActivity extends AppCompatActivity implements FacebookListener
     }
 
 
+
+
     @Override
-    public void onGoogleAuthSignIn(String s, String s1) {
-        Main2Activity.createInstance(LoginActivity.this,1,"G",null);
+    public void onGoogleAuthSignIn(String authToken, String userId, String email, String lastname, String name, String url) {
+
+        TOKEN=userId;
+        PHOTO=url;
+        METHOD="G";
+        requestLogin(email,null, METHOD, TOKEN,null);
     }
 
     @Override
@@ -303,9 +324,9 @@ public class LoginActivity extends AppCompatActivity implements FacebookListener
         @Override
         public void onLoginCompleted(User user) {
             mydb = new DB(LoginActivity.this);
-            if( mydb.insertUser(user.getId(),user.getName(),user.getLastname(),user.getCountry_id(),user.getApp_token(),user.getType(),user.getEmail(),user.getDoctor_id())){
+            if( mydb.insertUser(user.getId(),user.getName(),user.getLastname(),user.getCountry_id(),user.getApp_token(),user.getType(),user.getEmail(),user.getDoctor_id(),METHOD,PHOTO)){
                 progressDialog.dismiss();
-                Main2Activity.createInstance(LoginActivity.this,1,"E",user);
+               Main2Activity.createInstance(LoginActivity.this,user.getType(),user);
             }
         }
 
@@ -348,9 +369,64 @@ public class LoginActivity extends AppCompatActivity implements FacebookListener
             Toast.makeText(getApplicationContext(),message,Toast.LENGTH_SHORT).show();
         }*/
     }
+    private void requestEmail(AccessToken currentAccessToken) {
+        GraphRequest request = GraphRequest.newMeRequest(currentAccessToken, new GraphRequest.GraphJSONObjectCallback() {
+            @Override
+            public void onCompleted(JSONObject object, GraphResponse response) {
+                if (response.getError() != null) {
+                    Toast.makeText(getApplicationContext(), response.getError().getErrorMessage(), Toast.LENGTH_LONG).show();
+                    return;
+                }
+                try {
+                    String email = object.getString("email");
+                    setEmail(email);
+                } catch (JSONException e) {
+                    Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+        Bundle parameters = new Bundle();
+        parameters.putString("fields", "id, first_name, last_name, email, gender, birthday, location");
+        request.setParameters(parameters);
+        request.executeAsync();
+    }
+
+
+    private void setEmail(String email) {
+        FB_EMAIL=email;
+    }
+
+
+   /* private void requestEmail(AccessToken currentAccessToken) {
+
+        Bundle parameters = new Bundle();
+        parameters.putString("fields", "id, first_name, last_name, email, gender, birthday, location");
+
+        new GraphRequest(
+                AccessToken.getCurrentAccessToken(),
+                null,
+                parameters,
+                HttpMethod.GET,
+                new GraphRequest.Callback() {
+                    public void onCompleted(GraphResponse response) {
+            *//* handle the result *//*
+                        if (response.getError() != null) {
+                            Toast.makeText(getApplicationContext(), response.getError().getErrorMessage(), Toast.LENGTH_LONG).show();
+                            return;
+                        }
+                        try {
+                            String email = response.getJSONObject().getString("email");
+                            setEmail(email);
+                        } catch (JSONException e) {
+                            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                        }
+
+                    }
+                }
+        ).executeAndWait();*/
+    }
 
 
 
-}
 
 

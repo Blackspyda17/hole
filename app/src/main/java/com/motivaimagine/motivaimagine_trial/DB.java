@@ -28,6 +28,8 @@ public class DB extends SQLiteOpenHelper {
     public static final String USER_COLUMN_EMAIL = "email";
     public static final String USER_COLUMN_STATUS = "status";
     public static final String USER_COLUMN_DOCTOR_ID = "doctor_id";
+    public static final String USER_COLUMN_METHOD = "method";
+    public static final String USER_COLUMN_PICTURE = "picture";
 
     private HashMap hp;
 
@@ -40,7 +42,7 @@ public class DB extends SQLiteOpenHelper {
         // TODO Auto-generated method stub
         db.execSQL(
                 "create table user " +
-                        "(id integer primary key, name text, lastname text, country_id integer, app_token text, type integer, email text, doctor_id integer)"
+                        "(id integer primary key, name text, lastname text, country_id integer, app_token text, type integer, email text, doctor_id integer, method text, picture text)"
         );
     }
 
@@ -51,7 +53,7 @@ public class DB extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public boolean insertUser (int id, String name, String lastname, int country_id, String app_token, int type, String email,int doctor_id) {
+    public boolean insertUser (int id, String name, String lastname, int country_id, String app_token, int type, String email,int doctor_id, String method, String picture) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put("id", id);
@@ -59,9 +61,11 @@ public class DB extends SQLiteOpenHelper {
         contentValues.put("lastname", lastname);
         contentValues.put("country_id", country_id);
         contentValues.put("app_token", app_token);
-        contentValues.put("type", 1);
+        contentValues.put("type", type);
         contentValues.put("email", email);
-        contentValues.put("doctor_id", 1);
+        contentValues.put("doctor_id", doctor_id);
+        contentValues.put("method", method);
+        contentValues.put("picture", picture);
         try {
             db.insert("user", null, contentValues);
             return true;
@@ -83,7 +87,7 @@ public class DB extends SQLiteOpenHelper {
         return numRows;
     }
 
-    public boolean updateUser (int id, String name, String lastname, int country_id, String app_token, int type, String email,int doctor_id) {
+    public boolean updateUser (int id, String name, String lastname, int country_id, String app_token, int type, String email,int doctor_id, String method, String picture) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put("id", id);
@@ -94,6 +98,8 @@ public class DB extends SQLiteOpenHelper {
         contentValues.put("type", type);
         contentValues.put("email", email);
         contentValues.put("doctor_id", doctor_id);
+        contentValues.put("method", method);
+        contentValues.put("picture", picture);
         db.update("user", contentValues, "id = ? ", new String[] { Integer.toString(id) } );
         return true;
     }
@@ -123,7 +129,7 @@ public class DB extends SQLiteOpenHelper {
         if(res!=null){
             res.moveToFirst();
             USER = new User(res.getInt(res.getColumnIndex(USER_COLUMN_ID)),res.getString(res.getColumnIndex(USER_COLUMN_NAME)),res.getString(res.getColumnIndex(USER_COLUMN_LAST_NAME)),res.getInt(res.getColumnIndex(USER_COLUMN_COUNTRY_ID)),res.getString(res.getColumnIndex(USER_COLUMN_TOKEN))
-                    ,res.getInt(res.getColumnIndex(USER_COLUMN_TYPE)),res.getString(res.getColumnIndex(USER_COLUMN_EMAIL)),res.getInt(res.getColumnIndex(USER_COLUMN_DOCTOR_ID)));
+                    ,res.getInt(res.getColumnIndex(USER_COLUMN_TYPE)),res.getString(res.getColumnIndex(USER_COLUMN_EMAIL)),res.getInt(res.getColumnIndex(USER_COLUMN_DOCTOR_ID)),res.getString(res.getColumnIndex(USER_COLUMN_METHOD)),res.getString(res.getColumnIndex(USER_COLUMN_PICTURE)));
         }
 
 /*        while(res.isAfterLast() == false){
@@ -133,5 +139,5 @@ public class DB extends SQLiteOpenHelper {
         }*/
         res.close();
         return  USER;
-    }
 }
+    }

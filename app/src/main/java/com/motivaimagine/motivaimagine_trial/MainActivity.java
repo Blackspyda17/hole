@@ -10,13 +10,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 
-import com.facebook.AccessToken;
-import com.facebook.FacebookSdk;
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.auth.api.signin.GoogleSignInResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.OptionalPendingResult;
 import com.motivaimagine.motivaimagine_trial.rest_client.user.UserController;
 import com.motivaimagine.motivaimagine_trial.rest_client.user.listeners.LoginListener;
 import com.motivaimagine.motivaimagine_trial.rest_client.user.models.Error;
@@ -25,9 +18,10 @@ import com.mukeshsolanki.sociallogin.google.GoogleHelper;
 
 public class MainActivity extends AppCompatActivity {
     private String METHOD = "E";
-    private GoogleApiClient googleApiClient;
+
     private GoogleHelper mgoogle;
     private DB mydb;
+    User user_re=null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,9 +36,9 @@ public class MainActivity extends AppCompatActivity {
 
         mydb = new DB(this);
         if (mydb.numberOfRows() > 0) {
-            User user = mydb.getUser();
-            if (user != null) {
-                comprove_data(user.getEmail(), user.getApp_token());
+            user_re = mydb.getUser();
+            if (user_re != null) {
+                comprove_data(user_re);
             }
         }
 
@@ -80,15 +74,17 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void comprove_data(String email, String app_token) {
-        FacebookSdk.sdkInitialize(this);
+    private void comprove_data(User user) {
+        request_initlog(MainActivity.this,user.getEmail(),null,null,user.getApp_token());
+
+  /*      FacebookSdk.sdkInitialize(this);
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
                 .build();
         if(googleApiClient == null || !googleApiClient.isConnected()){
             try {
                 googleApiClient = new GoogleApiClient.Builder(MainActivity.this)
-                        .enableAutoManage(MainActivity.this /* FragmentActivity */, this.mgoogle /* OnConnectionFailedListener */)
+                        .enableAutoManage(MainActivity.this *//* FragmentActivity *//*, this.mgoogle *//* OnConnectionFailedListener *//*)
                         .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                         .build();
             } catch (Exception e) {
@@ -108,14 +104,14 @@ public class MainActivity extends AppCompatActivity {
         } else {
             request_initlog(MainActivity.this,email,null,null,app_token);
         }
-
+*/
 
     }
 
-
+/*
     private void goMain2Screen(String auth, User user) {
         Main2Activity.createInstance(MainActivity.this, 1, auth, user);
-    }
+    }*/
 
     public void request_initlog(Context context, String email, String password, String token, String apptoken) {
         UserController.getInstance().login(context, email, password, METHOD, token, apptoken, new MainActivity.InitCallback());
@@ -133,9 +129,11 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onLoginCompleted(User user) {
             mydb = new DB(MainActivity.this);
-            if (mydb.updateUser(user.getId(), user.getName(), user.getLastname(), user.getCountry_id(), user.getApp_token(), user.getType(), user.getEmail(), user.getDoctor_id())) {
-                Main2Activity.createInstance(MainActivity.this, 1, METHOD, user);
+            if (mydb.updateUser(user.getId(), user.getName(), user.getLastname(), user.getCountry_id(), user.getApp_token(), user.getType(), user.getEmail(), user.getDoctor_id(),user_re.getMethod(),user_re.getPicture())) {
+              User updt_user=mydb.getUser();
+                Main2Activity.createInstance(MainActivity.this, updt_user.getType(),user);
             }
+
         }
 
         @Override
@@ -151,9 +149,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if(googleApiClient!=null){
-            googleApiClient.stopAutoManage(MainActivity.this);
-            googleApiClient.disconnect();
-        }
+
     }
 }

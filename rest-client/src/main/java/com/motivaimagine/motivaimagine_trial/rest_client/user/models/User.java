@@ -15,9 +15,11 @@ public class User  implements Serializable {
     private int type;
     private String email;
     private int doctor_id;
+    private  String method;
+    private String picture;
 
 
-    public User(int id, String name, String lastname, int country_id, String app_token, int type, String email,int doctor_id) {
+    public User(int id, String name, String lastname, int country_id, String app_token, int type, String email,int doctor_id,String method,String picture) {
         this.id = id;
         this.name = name;
         this.lastname = lastname;
@@ -26,6 +28,8 @@ public class User  implements Serializable {
         this.type = type;
         this.email=email;
         this.doctor_id=doctor_id;
+        this.method=method;
+        this.picture=picture;
     }
 
     public int getId() {
@@ -91,6 +95,22 @@ public class User  implements Serializable {
 
     public void setDoctor_id(int doctor_id) {
         this.doctor_id = doctor_id;
+    }
+
+    public String getMethod() {
+        return method;
+    }
+
+    public void setMethod(String method) {
+        this.method = method;
+    }
+
+    public String getPicture() {
+        return picture;
+    }
+
+    public void setPicture(String picture) {
+        this.picture = picture;
     }
 }
 

@@ -7,7 +7,6 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.google.gson.Gson;
 import com.motivaimagine.motivaimagine_trial.rest_client.BaseService;
 import com.motivaimagine.motivaimagine_trial.rest_client.BuildConfig;
 import com.motivaimagine.motivaimagine_trial.rest_client.R;
@@ -37,12 +36,13 @@ public class UserController extends BaseService {
             return;
         listener.onLoginStart();
         JSONObject parameters = new JSONObject();
+
         if(method.equals("E") && apptoken==null){
 
             try {
                 parameters.put("email",username);
-                parameters.put("pass",password);
                 parameters.put("login",method);
+                parameters.put("pass",password);
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -50,7 +50,19 @@ public class UserController extends BaseService {
 
         }
 
-        else if(method.equals("E")&& apptoken!=null){
+        if(token!=null){
+            try {
+                parameters.put("email",username);
+                parameters.put("login",method);
+                parameters.put("token",token);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+        if(apptoken!=null){
             try {
                 parameters.put("email",username);
                 parameters.put("app_token",apptoken);
@@ -74,11 +86,11 @@ public class UserController extends BaseService {
                     String app_token =response.getString("app_token");
                     int type =response.getInt("type");
                     String email =response.getString("email");
-                    User user=new User(id,name,lastname,country_id,app_token,type,email,0);
+                    User user=new User(id,name,lastname,country_id,app_token,type,email,0,null,null);
                     listener.onLoginCompleted(user);
                 } catch (Exception e) {
                     try {
-                        Error error =new Error(response.getBoolean("Status"),response.getString("Code"));
+                        Error error =new Error(response.getBoolean("status"),response.getString("code"));
                         listener.onLoginError(error);
                     }catch (JSONException E){
                         Error error1= new Error(false,"Server Error");
@@ -91,7 +103,7 @@ public class UserController extends BaseService {
             public void onErrorResponse(VolleyError error) {
 
                 Toast.makeText(context,error.getMessage(),Toast.LENGTH_SHORT).show();
-                Error error1= new Error(false,"Error Parseando");
+                Error error1= new Error(false,"Server Error");
                 listener.onLoginError(error1);
             }
         });
@@ -132,10 +144,16 @@ public class UserController extends BaseService {
                     String app_token =response.getString("app_token");
                     int type =response.getInt("type");
                     String email =response.getString("email");
-                    User user=new User(id,name,lastname,country_id,app_token,type,email,0);
+                    User user=new User(id,name,lastname,country_id,app_token,type,email,0,null,null);
                     listener.onLoginCompleted(user);
                 } catch (Exception e) {
-                    Error error = new Gson().fromJson(String.valueOf(response),Error.class);
+                    Error error = null;
+                    try {
+                        error = new Error(response.getBoolean("status"),response.getString("code"));
+                    } catch (JSONException e1) {
+                        e1.printStackTrace();
+                        error = new Error(false,"Parsing Error");
+                    }
                     listener.onLoginError(error);
                 }
             }
