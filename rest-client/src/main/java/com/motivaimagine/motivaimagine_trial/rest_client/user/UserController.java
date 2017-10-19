@@ -93,7 +93,7 @@ public class UserController extends BaseService {
                         Error error =new Error(response.getBoolean("status"),response.getString("code"));
                         listener.onLoginError(error);
                     }catch (JSONException E){
-                        Error error1= new Error(false,"Server Error");
+                        Error error1= new Error(false,"Parsing Error");
                         listener.onLoginError(error1);
                     }
                 }

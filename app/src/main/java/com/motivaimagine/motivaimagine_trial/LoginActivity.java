@@ -3,10 +3,10 @@ package com.motivaimagine.motivaimagine_trial;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -332,17 +332,38 @@ public class LoginActivity extends AppCompatActivity implements FacebookListener
 
         @Override
         public void onLoginError(Error message) {
+
+            String mensaje = "Unknown Error";
+            if (message.getCode().equals("101")){
+                mensaje = getString(R.string.error_invalid_password);
+            }else if(message.getCode().equals("102")){
+                mensaje= getString(R.string.this_email_address_is_not_registered);
+            }else  if (message.getCode().equals("301")){
+                mensaje= "Error Interpreting the Information";
+            }
             progressDialog.dismiss();
-            new AlertDialog.Builder(LoginActivity.this)
+
+            Snackbar snackbar = Snackbar
+                    .make(getCurrentFocus(),mensaje, Snackbar.LENGTH_INDEFINITE)
+                    .setAction(getString(R.string.Dissmiss), new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+
+                        }
+                    });
+            snackbar.setActionTextColor(Color.WHITE);
+            snackbar.show();
+
+    /*        new AlertDialog.Builder(LoginActivity.this)
                     .setTitle("Error")
-                    .setMessage(message.getCode())
+                    .setMessage(mensaje)
                     .setPositiveButton(R.string.Accept, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();
                         }
                     })
                     .show();
-
+*/
         }
 
 /*        @Override

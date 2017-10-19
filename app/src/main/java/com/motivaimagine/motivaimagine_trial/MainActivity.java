@@ -1,5 +1,6 @@
 package com.motivaimagine.motivaimagine_trial;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -22,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
     private GoogleHelper mgoogle;
     private DB mydb;
     User user_re=null;
-
+    public ProgressDialog progressDialog ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,6 +34,11 @@ public class MainActivity extends AppCompatActivity {
             Window w = getWindow();
             w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         }
+        progressDialog=new ProgressDialog(MainActivity.this,
+                R.style.AppThemeMain2_Dark_Dialog);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setMessage("Validating, please wait...");
+
 
         mydb = new DB(this);
         if (mydb.numberOfRows() > 0) {
@@ -44,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         Button patient = (Button) findViewById(R.id.btn_patient);
+
         patient.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -123,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onLoginStart() {
-
+            progressDialog.show();
         }
 
         @Override
@@ -131,7 +138,9 @@ public class MainActivity extends AppCompatActivity {
             mydb = new DB(MainActivity.this);
             if (mydb.updateUser(user.getId(), user.getName(), user.getLastname(), user.getCountry_id(), user.getApp_token(), user.getType(), user.getEmail(), user.getDoctor_id(),user_re.getMethod(),user_re.getPicture())) {
               User updt_user=mydb.getUser();
+                progressDialog.dismiss();
                 Main2Activity.createInstance(MainActivity.this, updt_user.getType(),user);
+                overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
             }
 
         }
@@ -139,7 +148,8 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onLoginError(Error message) {
             mydb = new DB(MainActivity.this);
-            if(message.getCode().equalsIgnoreCase("100")){
+            if(message.getCode().equals("100")){
+                progressDialog.dismiss();
                 mydb.deleteUser(mydb.getIDFUser());
             }
 

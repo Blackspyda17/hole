@@ -5,7 +5,9 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.ScrollingMovementMethod;
@@ -23,11 +25,7 @@ import android.widget.Toast;
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.motivaimagine.motivaimagine_trial.facebook.FacebookHelper;
@@ -395,7 +393,7 @@ public class CreateAccountActivity extends AppCompatActivity implements Facebook
                         _signupButton.setEnabled(true);
                     }
                 })
-                .setIcon(android.R.drawable.ic_dialog_info)
+                .setIcon(R.drawable.ic_error_black_24dp)
                 .show();
         TextView textView = (TextView) dialog.findViewById(android.R.id.message);
         textView.setScroller(new Scroller(dialog.getContext()));
@@ -550,16 +548,25 @@ public class CreateAccountActivity extends AppCompatActivity implements Facebook
 
         @Override
         public void onLoginError(Error message) {
+
+            String mensaje = "Unknown Error";
+            if (message.getCode().equals("103")){
+                mensaje = getString(R.string.this_email_address_is_already_registered);
+            }else  if (message.getCode().equals("301")){
+                mensaje= "Error Interpreting Information";
+            }
             progressDialog.dismiss();
-            new AlertDialog.Builder(CreateAccountActivity.this)
-                    .setTitle("Error")
-                    .setMessage(message.getCode())
-                    .setPositiveButton(R.string.Accept, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
+            Snackbar snackbar = Snackbar
+                    .make(getCurrentFocus(),mensaje, Snackbar.LENGTH_INDEFINITE)
+                    .setAction(getString(R.string.Dissmiss), new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+
                         }
-                    })
-                    .show();
+                    });
+            snackbar.setActionTextColor(Color.WHITE);
+            snackbar.show();
+
 
         }
 
@@ -603,27 +610,7 @@ public class CreateAccountActivity extends AppCompatActivity implements Facebook
 
 
 
-    public void google_signup(String token) {
-        TOKEN=token;
 
-
-
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
-                .build();
-
-        googleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this, mGoogle)
-                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                .build();
-
-
-            OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(googleApiClient);
-
-
-
-
-        }
 
 
 

@@ -216,6 +216,7 @@ public class Main2Activity extends AppCompatActivity
     public static void createInstance(Activity activity, int user_type, User user) {
         Intent intent = getLaunchIntent(activity,user_type,user);
         activity.startActivity(intent);
+
     }
 
 
