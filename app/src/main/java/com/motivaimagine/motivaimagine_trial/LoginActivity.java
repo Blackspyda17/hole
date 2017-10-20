@@ -23,7 +23,7 @@ import com.motivaimagine.motivaimagine_trial.facebook.FacebookHelper;
 import com.motivaimagine.motivaimagine_trial.facebook.FacebookListener;
 import com.motivaimagine.motivaimagine_trial.google.GoogleHelper;
 import com.motivaimagine.motivaimagine_trial.google.GoogleListener;
-import com.motivaimagine.motivaimagine_trial.rest_client.user.UserController;
+import com.motivaimagine.motivaimagine_trial.rest_client.user.Controller;
 import com.motivaimagine.motivaimagine_trial.rest_client.user.listeners.LoginListener;
 import com.motivaimagine.motivaimagine_trial.rest_client.user.models.Error;
 import com.motivaimagine.motivaimagine_trial.rest_client.user.models.User;
@@ -156,9 +156,7 @@ public class LoginActivity extends AppCompatActivity implements FacebookListener
             onLoginFailed();
             return;
         }
-      //  _loginButton.setEnabled(false);
-
-
+        //  _loginButton.setEnabled(false);
 
 
         String email = _emailText.getText().toString();
@@ -166,17 +164,12 @@ public class LoginActivity extends AppCompatActivity implements FacebookListener
 
         // TODO: Implement your own authentication logic here.
 
-
-        requestLogin(email,password,"E",null,null);
-        new android.os.Handler().postDelayed(
-                new Runnable() {
-                    public void run() {
-                        // On complete call either onLoginSuccess or onLoginFailed
-                    //    onLoginSuccess();
-                        // onLoginFailed();
-
-                    }
-                }, 3000);
+        if (CheckNetwork.isInternetAvailable(this))  //if connection available
+        {
+            requestLogin(email, password, "E", null, null);
+        }else {
+            Dialogo.messageDialog(this,"Network Connection","No Internet Connection");
+        }
     }
 
 
@@ -249,7 +242,7 @@ public class LoginActivity extends AppCompatActivity implements FacebookListener
         /*Authorization process*/
     private void requestLogin(String username, String password,String method, String token,String apptoken ){
 
-    UserController.getInstance().login(this,username,password,method,token,apptoken,new LoginCallback());
+    Controller.getInstance().login(this,username,password,method,token,apptoken,new LoginCallback());
 
     }
 

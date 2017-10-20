@@ -2,20 +2,16 @@ package com.motivaimagine.motivaimagine_trial;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
+import com.motivaimagine.motivaimagine_trial.rest_client.user.models.Doctor;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -23,7 +19,7 @@ import java.util.List;
  */
 
 public class Doctor_Adapter extends RecyclerView.Adapter<Doctor_Adapter.DoctorViewHolder> implements ItemClickListener {
-    private ArrayList<String> mDataset;
+    private List<Doctor> items;
     private final Context context;
 
 
@@ -55,16 +51,16 @@ public class Doctor_Adapter extends RecyclerView.Adapter<Doctor_Adapter.DoctorVi
         }
     }
 
-    public Doctor_Adapter(Context context,ArrayList<String> items) {
+    public Doctor_Adapter(Context context,ArrayList<Doctor> items) {
 
         this.context = context;
-        this.mDataset = items;
+        this.items = items;
 
     }
 
     @Override
     public int getItemCount() {
-        return mDataset.size();
+        return items.size();
     }
 
 
@@ -79,8 +75,8 @@ public class Doctor_Adapter extends RecyclerView.Adapter<Doctor_Adapter.DoctorVi
 
 
     public void onBindViewHolder(DoctorViewHolder viewHolder, int i) {
-        String currentItem = mDataset.get(i);
-        viewHolder.nombre_doc.setText(currentItem);
+        Doctor currentItem = items.get(i);
+        viewHolder.nombre_doc.setText(currentItem.getName());
 
     }
 
@@ -96,7 +92,7 @@ public class Doctor_Adapter extends RecyclerView.Adapter<Doctor_Adapter.DoctorVi
      */
     @Override
     public void onItemClick(View view, int position) {
-        CreateAccountActivity.createInstance((Activity) context,0);
+        CreateAccountActivity.createInstance((Activity) context,items.get(position).getId());
     }
 
 

@@ -371,4 +371,30 @@ if(user.getMethod().equalsIgnoreCase("G")){
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
     }
+
+    @Override
+    protected void onStart() {
+
+        if(CheckNetwork.isInternetAvailable(this))  //if connection available
+        {
+            super.onStart();
+        }else {
+            super.onStart();
+            Dialogo.messageDialog(this);
+        }
+
+    }
+
+    @Override
+    protected void onResume() {
+
+        if(CheckNetwork.isInternetAvailable(this))  //if connection available
+        {
+            super.onResume();
+        }else {
+            super.onResume();
+            Dialogo.messageDialog(this);
+        }
+
+    }
 }

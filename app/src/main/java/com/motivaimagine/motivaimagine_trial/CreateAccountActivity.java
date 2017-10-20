@@ -32,7 +32,7 @@ import com.motivaimagine.motivaimagine_trial.facebook.FacebookHelper;
 import com.motivaimagine.motivaimagine_trial.facebook.FacebookListener;
 import com.motivaimagine.motivaimagine_trial.google.GoogleHelper;
 import com.motivaimagine.motivaimagine_trial.google.GoogleListener;
-import com.motivaimagine.motivaimagine_trial.rest_client.user.UserController;
+import com.motivaimagine.motivaimagine_trial.rest_client.user.Controller;
 import com.motivaimagine.motivaimagine_trial.rest_client.user.listeners.LoginListener;
 import com.motivaimagine.motivaimagine_trial.rest_client.user.models.Error;
 import com.motivaimagine.motivaimagine_trial.rest_client.user.models.User;
@@ -53,7 +53,7 @@ import butterknife.ButterKnife;
  */
 public class CreateAccountActivity extends AppCompatActivity implements FacebookListener,GoogleListener {
 
-    private int User;
+    private int Doctor_id;
     public ProgressDialog progressDialog;
     private String METHOD = "E";
     private String TOKEN=null;
@@ -116,8 +116,8 @@ public class CreateAccountActivity extends AppCompatActivity implements Facebook
             "Your correspondence or business dealings with, or participation in promotions of, advertisers found on or through the Site, including payment and delivery of related goods or services, and any other terms, conditions, warranties or representations associated with such dealings are solely between you and such advertiser. You agree that we are not responsible nor shall we be liable for loss or damage of any sort incurred as a result of any such dealings or as the result of the presence of such advertiser on the Site.\n" +
             "\n" +
             "Account Registration\n" +
-            "Some of the functions of this Site may require creation of an account with us. As part of the registration process, visitors will select a User Name and Password, along with registration information, which must be accurate and updated. You may not select or use a User Name of another person with the intent to impersonate that person or use a User Name in which another person has rights without such person’s authorization. Failure to comply with the above shall constitute a breach of this Agreement, which may result in immediate termination of your account. You agree to take reasonable measures to protect the security of your password.\n" +
-            "You are responsible for all usage or activity on your account, including use of the account by any third party authorized by you to use your User Name and Password. You shall notify ESTABLISHMENT LABS of any known or suspected unauthorized use(s) of your account, or any known or suspected breach of security, including loss, theft, or unauthorized disclosure of your password or any other relevant registration details provided.\n" +
+            "Some of the functions of this Site may require creation of an account with us. As part of the registration process, visitors will select a Doctor_id Name and Password, along with registration information, which must be accurate and updated. You may not select or use a Doctor_id Name of another person with the intent to impersonate that person or use a Doctor_id Name in which another person has rights without such person’s authorization. Failure to comply with the above shall constitute a breach of this Agreement, which may result in immediate termination of your account. You agree to take reasonable measures to protect the security of your password.\n" +
+            "You are responsible for all usage or activity on your account, including use of the account by any third party authorized by you to use your Doctor_id Name and Password. You shall notify ESTABLISHMENT LABS of any known or suspected unauthorized use(s) of your account, or any known or suspected breach of security, including loss, theft, or unauthorized disclosure of your password or any other relevant registration details provided.\n" +
             "\n" +
             "Site Privacy Statement\n" +
             "Our Privacy Statement is available on this Site and by accessing the Site, you are agreeing to be legally bound by the Privacy Policy. The Privacy Policy in its entirety is hereby incorporated into this Agreement by reference. To read our Privacy Policy please click here.\n" +
@@ -177,8 +177,9 @@ public class CreateAccountActivity extends AppCompatActivity implements Facebook
         setContentView(R.layout.activity_create_account);
         ButterKnife.bind(this);
         Bundle x = this.getIntent().getExtras();
+
         if (x != null) {
-            User = x.getInt(OPCION);
+            Doctor_id = x.getInt(OPCION);
         }
         mFacebook=new FacebookHelper(CreateAccountActivity.this);
         mGoogle=new GoogleHelper(this,this,null);
@@ -333,7 +334,6 @@ public class CreateAccountActivity extends AppCompatActivity implements Facebook
 
     public void signup() {
 
-        System.out.println("estee es eeeel paiiiiisss-----------"+paises.get(_country.getSelectedItemPosition()).getId());
         Log.d(TAG, "Signup");
 
         if (!validate()) {
@@ -358,7 +358,13 @@ public class CreateAccountActivity extends AppCompatActivity implements Facebook
 
         // TODO: Implement your own signup logic here.
         if(_terms.isChecked()){
-            requestSignUp(email, name, lastname, METHOD, "A", paises.get(_country.getSelectedItemPosition()).getId(), password, TOKEN);
+
+            if(CheckNetwork.isInternetAvailable(this))  //if connection available
+            {
+                requestSignUp(email, name, lastname, METHOD, "A", paises.get(_country.getSelectedItemPosition()).getId(), password, TOKEN);
+            }else {
+                Dialogo.messageDialog(this,"Network Connection","No Internet Connection");
+            }
         }else {
             dialogo(CreateAccountActivity.this,"TERMS AND PRIVACY POLICY","You must accept the terms and conditions and privacy policy before");
         }
@@ -378,7 +384,7 @@ public class CreateAccountActivity extends AppCompatActivity implements Facebook
     }
 
     private void requestSignUp(String email, String name, String lastname, String method, String platform, int country_id, String password, String token) {
-        UserController.getInstance().Register(this, name, lastname, email, method, platform, country_id, password, token, new CreateAccountActivity.RegisterCallback());
+        Controller.getInstance().Register(this, name, lastname, email, method, platform, country_id, password, token, new CreateAccountActivity.RegisterCallback());
     }
 
     public void dialogo(Context context, String titulo, String mensaje) {
@@ -540,7 +546,7 @@ public class CreateAccountActivity extends AppCompatActivity implements Facebook
         @Override
         public void onLoginCompleted(User user) {
             mydb = new DB(CreateAccountActivity.this);
-            if (mydb.insertUser(user.getId(), user.getName(), user.getLastname(), user.getCountry_id(), user.getApp_token(), user.getType(), user.getEmail(), user.getDoctor_id(),METHOD,PHOTO)) {
+            if (mydb.insertUser(user.getId(), user.getName(), user.getLastname(), user.getCountry_id(), user.getApp_token(), user.getType(), user.getEmail(), Doctor_id,METHOD,PHOTO)) {
                 progressDialog.dismiss();
                 Main2Activity.createInstance(CreateAccountActivity.this,user.getType(),user);
             }
@@ -578,7 +584,7 @@ public class CreateAccountActivity extends AppCompatActivity implements Facebook
 
 
         @Override
-        public void onUserInfoCompleted(User user) {
+        public void onUserInfoCompleted(Doctor_id user) {
             //logueo
             mydb = new DB(LoginActivity.this);
            if( mydb.insertUser(user.getId(),user.getName(),user.getLastname(),user.getEmail(),user.getType(),user.getType_id(),user.getMethod(),user.getToken(),user.getApptoken(),user.getPicture(),user.getDoctor_id())){

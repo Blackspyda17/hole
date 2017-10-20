@@ -6,27 +6,34 @@ import android.widget.Toast;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.google.gson.Gson;
 import com.motivaimagine.motivaimagine_trial.rest_client.BaseService;
 import com.motivaimagine.motivaimagine_trial.rest_client.BuildConfig;
 import com.motivaimagine.motivaimagine_trial.rest_client.R;
+import com.motivaimagine.motivaimagine_trial.rest_client.user.listeners.DoctorListener;
 import com.motivaimagine.motivaimagine_trial.rest_client.user.listeners.LoginListener;
+import com.motivaimagine.motivaimagine_trial.rest_client.user.models.Doctor;
 import com.motivaimagine.motivaimagine_trial.rest_client.user.models.Error;
 import com.motivaimagine.motivaimagine_trial.rest_client.user.models.User;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 /**
  * Created by gpaez on 9/21/2017.
  */
 
-public class UserController extends BaseService {
+public class Controller extends BaseService {
 
-    private static UserController INSTANCE = new UserController();
-    private UserController(){}
+    private static Controller INSTANCE = new Controller();
+    private Controller(){}
 
-    public static UserController getInstance(){
+    public static Controller getInstance(){
         return INSTANCE;
     }
 
@@ -169,6 +176,55 @@ public class UserController extends BaseService {
     }
 
 
+
+
+    public void getDoctorList(Context context,final DoctorListener listener){
+        if(listener==null)
+            return;
+        listener.onDoc_ListStart();
+        final ArrayList<Doctor> doctors=new ArrayList<>();
+
+        String url = BuildConfig.REST_URL.concat(String.format(context.getString(R.string.uri_doctors)));
+
+
+        JsonArrayRequest request = getDefaultRequest(Request.Method.GET, url, null, false, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+
+                try{
+                    for(int i=0;i<response.length();i++){
+                        // Get current json object
+
+
+                        Doctor doctor = new Gson().fromJson(String.valueOf(response.getJSONObject(i)),Doctor.class);
+                        doctors.add(doctor);
+                        // Get the current student (json object) data
+//                        String firstName = student.getString("firstname");
+//                        String lastName = student.getString("lastname");
+//                        String age = student.getString("age");
+
+                        // Display the formatted json data in text view
+                    }
+
+                    if(doctors.isEmpty()){
+                        listener.onDoc_ListError(new Error(false,"Couldn't Complete the request"));
+                    }else{
+                        listener.onDoc_ListCompleted(doctors);
+                    }
+
+                }catch (Exception e){
+                    listener.onDoc_ListError(new Error(false,"Couldn't Parsing data "+e.getMessage()));
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                listener.onDoc_ListError(new Error(false,"Couldn't REQUESTING data "+error.getMessage()));
+            }
+        });
+
+        getDefaultQueue(context).add(request);
+    }
 
 
 

@@ -11,7 +11,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 
-import com.motivaimagine.motivaimagine_trial.rest_client.user.UserController;
+import com.motivaimagine.motivaimagine_trial.rest_client.user.Controller;
 import com.motivaimagine.motivaimagine_trial.rest_client.user.listeners.LoginListener;
 import com.motivaimagine.motivaimagine_trial.rest_client.user.models.Error;
 import com.motivaimagine.motivaimagine_trial.rest_client.user.models.User;
@@ -44,7 +44,14 @@ public class MainActivity extends AppCompatActivity {
         if (mydb.numberOfRows() > 0) {
             user_re = mydb.getUser();
             if (user_re != null) {
-                comprove_data(user_re);
+
+                if(CheckNetwork.isInternetAvailable(this))  //if connection available
+                {
+                    comprove_data(user_re);
+                }else{
+                    Dialogo.messageDialog(this);
+                }
+
             }
         }
 
@@ -54,9 +61,18 @@ public class MainActivity extends AppCompatActivity {
         patient.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent doctores = new Intent(getApplicationContext(), doctor_list.class);
-                startActivity(doctores);
-                overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+
+
+
+                if(CheckNetwork.isInternetAvailable(MainActivity.this))  //if connection available
+                {
+                    Intent doctores = new Intent(getApplicationContext(), doctor_list.class);
+                    startActivity(doctores);
+                    overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+
+                }else{
+                    Dialogo.messageDialog(MainActivity.this,"Network Connection","No Internet Connection");
+                }
             }
         });
 
@@ -65,8 +81,14 @@ public class MainActivity extends AppCompatActivity {
         doctor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(CheckNetwork.isInternetAvailable(MainActivity.this))  //if connection available
+                {
                 LoginActivity.createInstance(MainActivity.this, 2);
                 overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+                }else{
+                    Dialogo.messageDialog(MainActivity.this,"Network Connection","No Internet Connection");
+                }
             }
         });
 
@@ -74,8 +96,13 @@ public class MainActivity extends AppCompatActivity {
         Login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(CheckNetwork.isInternetAvailable(MainActivity.this))  //if connection available
+                {
                 LoginActivity.createInstance(MainActivity.this, 0);
                 overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+                }else{
+                    Dialogo.messageDialog(MainActivity.this,"Network Connection","No Internet Connection");
+                }
             }
         });
 
@@ -121,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
     }*/
 
     public void request_initlog(Context context, String email, String password, String token, String apptoken) {
-        UserController.getInstance().login(context, email, password, METHOD, token, apptoken, new MainActivity.InitCallback());
+        Controller.getInstance().login(context, email, password, METHOD, token, apptoken, new MainActivity.InitCallback());
 
     }
 
@@ -157,8 +184,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public void onBackPressed() {
+        if(!CheckNetwork.isInternetAvailable(this))  //if connection available
+        {
+            finish();
+        }else {
+            super.onBackPressed();
+        }
 
     }
 }

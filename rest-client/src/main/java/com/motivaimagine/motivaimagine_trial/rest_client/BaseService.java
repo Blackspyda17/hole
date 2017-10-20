@@ -8,9 +8,11 @@ import com.android.volley.NetworkResponse;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.HttpHeaderParser;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
@@ -34,6 +36,37 @@ public class BaseService {
                     String jsonString = new String(response.data,
                             HttpHeaderParser.parseCharset(response.headers, PROTOCOL_CHARSET));
                     return Response.success(new JSONObject(jsonString),
+                            enforceClientCaching(HttpHeaderParser.parseCacheHeaders(response),
+                                    response));
+                } catch (Exception e)
+                {
+                    return super.parseNetworkResponse(response);
+                }
+            }
+        };
+
+        request.setRetryPolicy(new DefaultRetryPolicy(
+                1000 * 60, // 60 seconds
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        return request;
+    }
+
+    protected JsonArrayRequest getDefaultRequest(int method, String url, JSONArray parameters, final boolean fromCache, Response.Listener<JSONArray> listener, Response.ErrorListener errorListener){
+        if(!fromCache)
+            url = url + (url.contains("?")? "&" : "?") +  "_cache=false";
+        JsonArrayRequest request = new JsonArrayRequest(method,url,parameters,listener,errorListener){
+
+            @Override
+            protected Response<JSONArray> parseNetworkResponse(NetworkResponse response)
+            {
+                try
+                {
+                    if(!fromCache)
+                        return super.parseNetworkResponse(response);
+                    String jsonString = new String(response.data,
+                            HttpHeaderParser.parseCharset(response.headers, PROTOCOL_CHARSET));
+                    return Response.success(new JSONArray(jsonString),
                             enforceClientCaching(HttpHeaderParser.parseCacheHeaders(response),
                                     response));
                 } catch (Exception e)
