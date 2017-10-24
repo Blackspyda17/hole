@@ -58,7 +58,7 @@ public class doctor_list extends AppCompatActivity {
     }
 
 
-    class DoctorLCallback implements DoctorListener {
+  public  class DoctorLCallback implements DoctorListener {
         @Override
         public void onDoc_ListStart() {
             progressDialog.show();

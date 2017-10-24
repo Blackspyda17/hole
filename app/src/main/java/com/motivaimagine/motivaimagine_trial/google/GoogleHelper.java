@@ -19,7 +19,6 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 
-
 import java.io.IOException;
 
 public class GoogleHelper implements GoogleApiClient.OnConnectionFailedListener {

@@ -226,6 +226,66 @@ public class Controller extends BaseService {
         getDefaultQueue(context).add(request);
     }
 
+    public void Implant_Reg (Context context1,String user_id, String doctor_id,String doctor_name,String surgery_date,String registrant_id,int implantL,String validationL,String implantR,String validationR,String amount, final LoginListener listener){
+        if(listener==null)
+            return;
+        listener.onLoginStart();
+        String url = BuildConfig.REST_URL.concat(String.format(context1.getString(R.string.uri_register)));
+        JSONObject parameters = new JSONObject();
+        try {
+            parameters.put("user_id",user_id);
+            parameters.put("doctor_id",doctor_id);
+            parameters.put("doctor_name",doctor_name);
+            parameters.put("surgery_date",surgery_date);
+            parameters.put("registrant_id",registrant_id);
+            parameters.put("implantL",implantL);
+            parameters.put("validationL",validationL);
+            parameters.put("implantR",implantR);
+            parameters.put("validationR",validationR);
+            parameters.put("amount",amount);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JsonObjectRequest request = getDefaultRequest(Request.Method.POST, url, parameters, false, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    // User user = new Gson().fromJson(String.valueOf(response),User.class);
+
+                    int id = response.getInt("user_id");
+                    String name =response.getString("First_Name");
+                    String lastname =response.getString("Last_Name");
+                    int country_id =response.getInt("country_id");
+                    String app_token =response.getString("app_token");
+                    int type =response.getInt("type");
+                    String email =response.getString("email");
+                    User user=new User(id,name,lastname,country_id,app_token,type,email,0,null,null);
+                    listener.onLoginCompleted(user);
+                } catch (Exception e) {
+                    Error error = null;
+                    try {
+                        error = new Error(response.getBoolean("status"),response.getString("code"));
+                    } catch (JSONException e1) {
+                        e1.printStackTrace();
+                        error = new Error(false,"Parsing Error");
+                    }
+                    listener.onLoginError(error);
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Error error1= new Error(false,"Error interpretando");
+                listener.onLoginError(error1);
+            }
+        });
+
+        getDefaultQueue(context1).add(request);
+    }
+
+
 
 
 

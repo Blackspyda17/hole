@@ -19,7 +19,7 @@ import butterknife.ButterKnife;
 public class implant_regist_1 extends Fragment implements Step{
 
 
-    @BindView(R.id.rb_breast) RadioButton _typ_breast;
+   // @BindView(R.id.rb_breast) RadioButton _typ_breast;
     @BindView(R.id.rg_q) RadioGroup _opt_q;
     @BindView(R.id.rb_1) RadioButton _rb_1;
     @BindView(R.id.rb_2) RadioButton _rb_2;
@@ -66,6 +66,16 @@ public class implant_regist_1 extends Fragment implements Step{
     @Override
     public VerificationError verifyStep() {
         //return null if the user can go to the next step, create a new VerificationError instance otherwise
+        if(_rb_1.isChecked()) {
+            Reg_Implant.my_implant.setAmount(1);
+            if (_side_l.isChecked()){
+                Reg_Implant.my_implant.setImplantL("side");
+            }else {
+                Reg_Implant.my_implant.setImplantR("side");
+            }
+        }
+
+
         return null;
     }
 

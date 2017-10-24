@@ -9,8 +9,6 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
 
 import com.stepstone.stepper.Step;
@@ -27,9 +25,9 @@ public class implant_regist_2 extends Fragment implements Step {
     public static final int DATEPICKER_FRAGMENT = 1;
     @BindView(R.id.edt_date)
     TextView _date;
-    @BindView(R.id.actv_doct)
+  /*  @BindView(R.id.actv_doct)
     AutoCompleteTextView _doc_name;
-    String[] doctors = {"Gerardo Mora", "Gerson Rodriguez", "Gilberth Andres Paez Ortiz", "jorge mayorga",};
+    String[] doctors = {"Gerardo Mora", "Gerson Rodriguez", "Gilberth Andres Paez Ortiz", "jorge mayorga",};*/
     private int sMonth, sYear, sDay;
     static final int DATE_ID = 0;
 
@@ -58,12 +56,12 @@ public class implant_regist_2 extends Fragment implements Step {
         });
 
         //Creating the instance of ArrayAdapter containing list of fruit names
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>
+/*        ArrayAdapter<String> adapter = new ArrayAdapter<String>
                 (this.getContext(), android.R.layout.select_dialog_item, doctors);
         //Getting the instance of AutoCompleteTextView
         _doc_name = (AutoCompleteTextView) v.findViewById(R.id.actv_doct);
         _doc_name.setThreshold(4);//will start working from first character
-        _doc_name.setAdapter(adapter);//setting the adapter data into the AutoCompleteTextView
+        _doc_name.setAdapter(adapter);//setting the adapter data into the AutoCompleteTextView*/
 
         return v;
     }
@@ -71,6 +69,7 @@ public class implant_regist_2 extends Fragment implements Step {
     @Override
     public VerificationError verifyStep() {
         //return null if the user can go to the next step, create a new VerificationError instance otherwise
+        Reg_Implant.my_implant.setSugery_date(_date.getText().toString());
         return null;
     }
 
@@ -106,7 +105,7 @@ public class implant_regist_2 extends Fragment implements Step {
         }
 
 
-        return dia + "/" + mes + "/" + sYear;
+        return dia + "-" + mes + "-" + sYear;
 
 
     }

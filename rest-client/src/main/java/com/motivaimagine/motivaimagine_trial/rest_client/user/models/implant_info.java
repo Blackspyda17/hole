@@ -1,4 +1,4 @@
-package com.motivaimagine.motivaimagine_trial;
+package com.motivaimagine.motivaimagine_trial.rest_client.user.models;
 
 /**
  * Created by gpaez on 9/4/2017.

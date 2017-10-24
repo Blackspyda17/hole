@@ -3,7 +3,6 @@ package com.motivaimagine.motivaimagine_trial;
 import android.content.Context;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
 import com.stepstone.stepper.Step;
@@ -11,8 +10,6 @@ import com.stepstone.stepper.adapter.AbstractFragmentStepAdapter;
 import com.stepstone.stepper.viewmodel.StepViewModel;
 
 import java.util.ArrayList;
-
-import layout.implant_regist_4;
 
 /**
  * Created by gpaez on 7/26/2017.
@@ -58,5 +55,7 @@ public class MyStepperAdapter extends AbstractFragmentStepAdapter {
     public void notifyDataSetChanged() {
         super.notifyDataSetChanged();
     }
+
+
 }
 
