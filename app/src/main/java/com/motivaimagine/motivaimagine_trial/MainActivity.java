@@ -3,8 +3,10 @@ package com.motivaimagine.motivaimagine_trial;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.Window;
@@ -77,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        Button doctor = (Button) findViewById(R.id.btn_doctor);
+  /*      Button doctor = (Button) findViewById(R.id.btn_doctor);
         doctor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -90,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
                     Dialogo.messageDialog(MainActivity.this,"Network Connection","No Internet Connection");
                 }
             }
-        });
+        });*/
 
         Button Login = (Button) findViewById(R.id.btn_login);
         Login.setOnClickListener(new View.OnClickListener() {
@@ -178,6 +180,19 @@ public class MainActivity extends AppCompatActivity {
             if(message.getCode().equals("100")){
                 progressDialog.dismiss();
                 mydb.deleteUser(mydb.getIDFUser());
+            }else{
+                progressDialog.dismiss();
+                mydb.deleteUser(mydb.getIDFUser());
+                Snackbar snackbar = Snackbar
+                        .make(getCurrentFocus(),"Error , please try ton Sign in Again", Snackbar.LENGTH_INDEFINITE)
+                        .setAction(getString(R.string.Dissmiss), new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+                            }
+                        });
+                snackbar.setActionTextColor(Color.WHITE);
+                snackbar.show();
             }
 
         }

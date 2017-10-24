@@ -27,7 +27,7 @@
             android:layout_marginTop="64dp"
             android:orientation="vertical">
 
-            <LinearLayout
+         <!--   <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginTop="8dp"
@@ -74,7 +74,7 @@
                         android:text="@string/Gluteal"
                         android:textColor="@color/text_radio" />
                 </RadioGroup>
-            </LinearLayout>
+            </LinearLayout>-->
 
             <LinearLayout
                 android:layout_width="match_parent"

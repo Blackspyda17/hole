@@ -3,16 +3,12 @@ package com.motivaimagine.motivaimagine_trial;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
-
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.widget.DatePicker;
-import android.widget.TextView;
 
 import java.util.Calendar;
-import java.util.Date;
 
 /**
  * Created by gpaez on 8/22/2017.
@@ -69,7 +65,7 @@ public class SelectDateFragment extends DialogFragment implements DatePickerDial
         populateSetDate(yy, mm+1, dd);
     }
     public void populateSetDate(int year, int month, int day) {
-        dob= month+"/"+day+"/"+year;
+        dob= day+"-"+month+"-"+year;
         Intent i = new Intent();
         i.putExtra("selectedDate",dob);
         getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, i);

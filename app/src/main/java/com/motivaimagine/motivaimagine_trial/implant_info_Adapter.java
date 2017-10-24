@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 
+import com.motivaimagine.motivaimagine_trial.rest_client.user.models.implant_info;
+
 import java.util.ArrayList;
 import java.util.List;
 

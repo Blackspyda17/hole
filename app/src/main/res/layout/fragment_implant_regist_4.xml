@@ -8,7 +8,7 @@
         android:layout_height="match_parent"
         android:gravity="center_horizontal"
         android:orientation="vertical"
-        tools:context="layout.implant_regist_4"
+        tools:context=".implant_regist_4"
         >
 
         <LinearLayout
@@ -21,6 +21,7 @@
 
 
             <LinearLayout
+                android:id="@+id/ln_left"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical">
@@ -89,7 +90,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="@string/validation_code"
-                            android:maxLength="1"/>
+                            android:maxLength="1" />
                     </android.support.design.widget.TextInputLayout>
 
                 </LinearLayout>
@@ -97,6 +98,7 @@
 
 
             <LinearLayout
+                android:id="@+id/ln_right"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginTop="32dp"
@@ -134,10 +136,10 @@
 
                             <EditText
                                 android:id="@+id/edt_right_serial"
+                                android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:hint="@string/serial_number"
-                                />
+                                android:hint="@string/serial_number" />
 
 
                         </android.support.design.widget.TextInputLayout>
@@ -163,7 +165,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="@string/validation_code"
-                            android:maxLength="1"/>
+                            android:maxLength="1" />
                     </android.support.design.widget.TextInputLayout>
 
                 </LinearLayout>

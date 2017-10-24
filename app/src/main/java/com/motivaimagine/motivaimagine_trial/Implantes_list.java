@@ -1,7 +1,5 @@
 package com.motivaimagine.motivaimagine_trial;
 
-import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,9 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.motivaimagine.motivaimagine_trial.R;
-import com.motivaimagine.motivaimagine_trial.implant_info;
-import com.motivaimagine.motivaimagine_trial.implant_info_Adapter;
+import com.motivaimagine.motivaimagine_trial.rest_client.user.models.implant_info;
 
 import java.util.ArrayList;
 import java.util.List;
