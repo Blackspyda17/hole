@@ -1,0 +1,9 @@
+<application>
+  <component name="FileTypeManager" version="17">
+    <extensionMap>
+      <mapping ext="mp4" type="Native" />
+      <mapping ext="flat" type="PLAIN_TEXT" />
+      <mapping pattern="zigzag" type="XML" />
+    </extensionMap>
+  </component>
+</application>
